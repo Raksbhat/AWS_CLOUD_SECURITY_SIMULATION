@@ -16,170 +16,711 @@
   --accent3: #00ff99;
   --warn: #ffb800;
   --purple: #b47dff;
-  --orange: #ff9500;
   --text: #c8e8ff;
   --dim: #4a7a9b;
   --glow: 0 0 20px rgba(0,212,255,0.3);
   --glow-red: 0 0 20px rgba(255,76,76,0.4);
   --glow-green: 0 0 20px rgba(0,255,153,0.3);
 }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);background-size:40px 40px;z-index:0;pointer-events:none;}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:9999;}
 
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior: smooth; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Rajdhani', sans-serif;
-  overflow-x: hidden;
-}
-
-body::before {
-  content:'';
-  position:fixed; inset:0;
-  background-image:
-    linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
-  background-size: 40px 40px;
-  z-index:0; pointer-events:none;
-}
-
-body::after {
-  content:'';
-  position:fixed; inset:0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
-  pointer-events:none; z-index:9999;
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:13px 20px;background:rgba(2,11,20,0.96);border-bottom:1px solid var(--border);backdrop-filter:blur(14px);z-index:1000;gap:12px;}
+.logo{font-family:'Orbitron',monospace;font-size:clamp(0.78rem,3.5vw,1.05rem);font-weight:900;color:var(--accent);text-shadow:var(--glow);letter-spacing:2px;white-space:nowrap;}
+.logo span{color:var(--accent2);}
+.status-badge{display:flex;align-items:center;gap:6px;font-family:'Share Tech Mono',monospace;font-size:clamp(0.5rem,1.8vw,0.68rem);color:var(--accent3);white-space:nowrap;}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--accent3);box-shadow:0 0 8px var(--accent3);animation:blink 1.4s ease-in-out infinite;flex-shrink:0;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.15}}
+.nav-links{display:none;position:fixed;top:54px;left:0;right:0;background:rgba(2,11,20,0.98);border-bottom:1px solid var(--border);padding:16px 20px;flex-direction:column;gap:0;z-index:999;}
+.nav-links.open{display:flex;}
+.nav-links a{font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--dim);text-decoration:none;letter-spacing:2px;padding:12px 0;border-bottom:1px solid var(--border);transition:color 0.2s;}
+.nav-links a:last-child{border-bottom:none;}
+.nav-links a:hover{color:var(--accent);}
+.hamburger{display:flex;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--accent);}
+@media(min-width:640px){
+  .hamburger{display:none;}
+  .nav-links{display:flex!important;position:static;flex-direction:row;gap:20px;padding:0;background:none;border:none;}
+  .nav-links a{border:none;padding:0;font-size:0.68rem;}
 }
 
-/* \u2500\u2500 NAV \u2500\u2500 */
-nav {
-  position:fixed; top:0; left:0; right:0;
-  display:flex; align-items:center; justify-content:space-between;
-  padding:13px 20px;
-  background:rgba(2,11,20,0.96);
-  border-bottom:1px solid var(--border);
-  backdrop-filter:blur(14px);
-  z-index:1000; gap:12px;
+/* TICKER */
+.ticker-wrap{margin-top:54px;background:rgba(255,76,76,0.07);border-top:1px solid rgba(255,76,76,0.2);border-bottom:1px solid rgba(255,76,76,0.2);padding:9px 0;overflow:hidden;white-space:nowrap;position:relative;z-index:1;}
+.ticker-inner{display:inline-block;animation:ticker 42s linear infinite;font-family:'Share Tech Mono',monospace;font-size:clamp(0.56rem,2vw,0.7rem);color:var(--accent2);letter-spacing:1.5px;padding-right:60px;}
+@keyframes ticker{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
+
+/* HERO */
+.hero{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:52px 20px 56px;}
+.hero-eyebrow{font-family:'Share Tech Mono',monospace;font-size:clamp(0.56rem,2.2vw,0.72rem);letter-spacing:4px;color:var(--accent);margin-bottom:18px;animation:fadeUp 0.8s ease both;}
+.hero h1{font-family:'Orbitron',monospace;font-size:clamp(1.4rem,5.5vw,3.5rem);font-weight:900;line-height:1.12;letter-spacing:1px;text-transform:uppercase;color:#fff;animation:fadeUp 0.8s 0.1s ease both;max-width:780px;}
+.hero h1 em{font-style:normal;color:var(--accent);text-shadow:var(--glow);}
+.hero-sub{margin-top:16px;font-size:clamp(0.88rem,2.8vw,1.05rem);color:var(--dim);max-width:600px;line-height:1.65;animation:fadeUp 0.8s 0.2s ease both;padding:0 8px;}
+.pipeline-label{margin-top:30px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;animation:fadeUp 0.8s 0.3s ease both;}
+.pipe-step{padding:8px 16px;border:1px solid;font-family:'Share Tech Mono',monospace;font-size:clamp(0.6rem,2.2vw,0.78rem);letter-spacing:2px;background:var(--panel);}
+.pipe-step.detect{color:var(--warn);border-color:var(--warn);}
+.pipe-step.remediate{color:var(--accent2);border-color:var(--accent2);}
+.pipe-step.deploy{color:var(--accent3);border-color:var(--accent3);}
+.pipe-arrow{color:var(--dim);font-size:1rem;}
+.hero-metrics{margin-top:36px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px;width:100%;max-width:480px;animation:fadeUp 0.8s 0.4s ease both;}
+@media(min-width:500px){.hero-metrics{grid-template-columns:repeat(4,1fr);max-width:720px;}}
+.metric{background:var(--panel);border:1px solid var(--border);padding:16px 10px;text-align:center;}
+.metric-val{font-family:'Orbitron',monospace;font-size:clamp(1.3rem,5vw,2rem);font-weight:700;}
+.c1{color:var(--accent);text-shadow:var(--glow);}
+.c2{color:var(--accent3);text-shadow:var(--glow-green);}
+.c3{color:var(--warn);}
+.c4{color:var(--accent2);text-shadow:var(--glow-red);}
+.metric-label{font-family:'Share Tech Mono',monospace;font-size:clamp(0.5rem,1.8vw,0.62rem);color:var(--dim);letter-spacing:1px;margin-top:5px;}
+
+/* SECTION */
+section{position:relative;z-index:1;padding:52px 20px;max-width:1200px;margin:0 auto;}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:28px;flex-wrap:wrap;}
+.section-num{font-family:'Share Tech Mono',monospace;font-size:0.68rem;color:var(--accent);letter-spacing:3px;white-space:nowrap;}
+.section-title{font-family:'Orbitron',monospace;font-size:clamp(0.82rem,3.5vw,1.25rem);font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;}
+.section-line{flex:1;min-width:20px;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
+
+/* ACCOUNTS */
+.accounts-grid{display:grid;grid-template-columns:1fr;gap:14px;}
+@media(min-width:700px){.accounts-grid{grid-template-columns:repeat(3,1fr);}}
+.account-card{background:var(--panel);border:1px solid var(--border);overflow:hidden;transition:all 0.3s;}
+.account-card:hover{transform:translateY(-4px);box-shadow:var(--glow);border-color:var(--accent);}
+.account-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.account-icon{font-size:1.4rem;}
+.account-name{font-family:'Orbitron',monospace;font-size:clamp(0.68rem,2.5vw,0.8rem);font-weight:700;letter-spacing:2px;}
+.account-card.prod .account-header{background:rgba(0,255,153,0.06);}
+.account-card.log  .account-header{background:rgba(0,212,255,0.06);}
+.account-card.dep  .account-header{background:rgba(180,125,255,0.06);}
+.account-card.prod .account-name{color:var(--accent3);}
+.account-card.log  .account-name{color:var(--accent);}
+.account-card.dep  .account-name{color:var(--purple);}
+.account-body{padding:18px;}
+.account-desc{font-size:clamp(0.8rem,2.5vw,0.9rem);color:var(--dim);line-height:1.6;margin-bottom:14px;}
+.resource-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
+.chip{font-family:'Share Tech Mono',monospace;font-size:clamp(0.56rem,1.8vw,0.65rem);padding:4px 9px;border:1px solid var(--border);background:rgba(0,212,255,0.03);color:var(--dim);letter-spacing:1px;transition:all 0.2s;}
+.chip:hover{color:var(--accent);border-color:var(--accent);background:rgba(0,212,255,0.1);}
+.chip-label{font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--accent3);letter-spacing:2px;margin:10px 0 6px;}
+.chip-label.warn{color:var(--warn);}
+.chip-label.purple{color:var(--purple);}
+
+/* DETECTION */
+.detection-grid{display:grid;grid-template-columns:1fr;gap:12px;}
+@media(min-width:640px){.detection-grid{grid-template-columns:repeat(3,1fr);}}
+.event-group{background:var(--panel);border:1px solid var(--border);padding:18px;transition:all 0.3s;}
+.event-group:hover{border-color:var(--warn);box-shadow:0 0 14px rgba(255,184,0,0.15);}
+.event-group-title{font-family:'Orbitron',monospace;font-size:clamp(0.62rem,2vw,0.73rem);letter-spacing:2px;color:var(--warn);margin-bottom:12px;}
+.event-list{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.event-list li{font-family:'Share Tech Mono',monospace;font-size:clamp(0.6rem,2vw,0.7rem);color:var(--text);padding:7px 10px;background:rgba(255,184,0,0.04);border:1px solid rgba(255,184,0,0.12);border-left:2px solid var(--warn);transition:all 0.2s;}
+.event-list li:hover{background:rgba(255,184,0,0.1);color:var(--warn);}
+
+/* REMEDIATION */
+.remed-grid{display:grid;grid-template-columns:1fr;gap:14px;}
+@media(min-width:640px){.remed-grid{grid-template-columns:repeat(3,1fr);}}
+.remed-card{background:var(--panel);border:1px solid var(--border);overflow:hidden;transition:all 0.3s;}
+.remed-card:hover{border-color:var(--accent2);box-shadow:var(--glow-red);transform:translateY(-3px);}
+.remed-header{padding:13px 17px;background:rgba(255,76,76,0.07);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.remed-icon{font-size:1.3rem;}
+.remed-title{font-family:'Orbitron',monospace;font-size:clamp(0.6rem,2vw,0.7rem);color:var(--accent2);letter-spacing:1.5px;}
+.remed-body{padding:16px;}
+.remed-body p{font-size:clamp(0.78rem,2.4vw,0.88rem);color:var(--dim);line-height:1.6;margin-bottom:12px;}
+.step-list{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.step-list li{display:flex;align-items:flex-start;gap:10px;font-family:'Share Tech Mono',monospace;font-size:clamp(0.58rem,1.9vw,0.68rem);color:var(--text);line-height:1.5;}
+.step-num{flex-shrink:0;width:20px;height:20px;background:var(--accent2);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;margin-top:1px;}
+.tag-callout{margin-top:18px;background:rgba(255,184,0,0.05);border:1px solid rgba(255,184,0,0.22);padding:16px 18px;display:flex;align-items:flex-start;gap:12px;}
+.tag-callout-icon{font-size:1.3rem;flex-shrink:0;}
+.tag-callout-title{font-family:'Orbitron',monospace;font-size:clamp(0.6rem,1.9vw,0.7rem);color:var(--warn);letter-spacing:2px;margin-bottom:5px;}
+.tag-callout-body{font-size:clamp(0.8rem,2.4vw,0.88rem);color:var(--dim);line-height:1.6;}
+
+/* FLOW */
+.flow-container{background:var(--panel);border:1px solid var(--border);padding:26px 18px;}
+.flow-steps{display:flex;flex-direction:column;align-items:center;}
+@media(min-width:700px){.flow-steps{flex-direction:row;justify-content:center;align-items:center;}}
+.flow-step{display:flex;flex-direction:column;align-items:center;flex:1;min-width:0;}
+.flow-box{width:100%;max-width:120px;border:1px solid var(--border);background:var(--bg2);padding:12px 8px;text-align:center;transition:all 0.3s;cursor:default;}
+.flow-box:hover{transform:scale(1.05);}
+.flow-box.t1{border-color:rgba(255,76,76,0.5);background:rgba(255,76,76,0.06);}
+.flow-box.t2{border-color:rgba(255,184,0,0.5);background:rgba(255,184,0,0.06);}
+.flow-box.t3{border-color:rgba(0,212,255,0.5);background:rgba(0,212,255,0.06);}
+.flow-box.t4{border-color:rgba(255,149,0,0.5);background:rgba(255,149,0,0.06);}
+.flow-box.t5{border-color:rgba(0,255,153,0.5);background:rgba(0,255,153,0.06);}
+.flow-box.t6{border-color:rgba(180,125,255,0.5);background:rgba(180,125,255,0.06);}
+.flow-emoji{font-size:1.5rem;margin-bottom:5px;}
+.flow-name{font-family:'Orbitron',monospace;font-size:clamp(0.52rem,1.6vw,0.6rem);letter-spacing:1px;color:#fff;line-height:1.3;}
+.flow-sub{font-family:'Share Tech Mono',monospace;font-size:clamp(0.48rem,1.4vw,0.55rem);color:var(--dim);margin-top:3px;line-height:1.3;}
+.flow-arrow{display:flex;flex-direction:column;align-items:center;color:var(--accent);padding:6px 2px;}
+.arrow-sym{font-size:1rem;transform:rotate(90deg);}
+@media(min-width:700px){.arrow-sym{transform:none;}}
+.flow-badges{margin-top:20px;padding-top:18px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+.badge{font-family:'Share Tech Mono',monospace;font-size:clamp(0.55rem,1.7vw,0.63rem);padding:4px 10px;border:1px solid;letter-spacing:1px;}
+
+/* PRINCIPLES */
+.principles-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+@media(min-width:640px){.principles-grid{grid-template-columns:repeat(3,1fr);}}
+.principle-card{background:var(--panel);border:1px solid var(--border);padding:18px 14px;transition:all 0.3s;}
+.principle-card:hover{border-color:var(--accent3);box-shadow:var(--glow-green);transform:translateY(-3px);}
+.principle-icon{font-size:1.5rem;margin-bottom:8px;}
+.principle-name{font-family:'Orbitron',monospace;font-size:clamp(0.58rem,2vw,0.68rem);color:var(--accent3);letter-spacing:1.5px;margin-bottom:7px;}
+.principle-desc{font-size:clamp(0.76rem,2.3vw,0.84rem);color:var(--dim);line-height:1.55;}
+
+/* TECH STACK */
+.tech-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+@media(min-width:480px){.tech-grid{grid-template-columns:repeat(3,1fr);}}
+@media(min-width:760px){.tech-grid{grid-template-columns:repeat(4,1fr);}}
+@media(min-width:960px){.tech-grid{grid-template-columns:repeat(6,1fr);}}
+.tech-card{background:var(--panel);border:1px solid var(--border);padding:14px 10px;text-align:center;transition:all 0.3s;}
+.tech-card:hover{border-color:var(--accent);box-shadow:var(--glow);transform:translateY(-3px);}
+.tech-icon{font-size:1.4rem;margin-bottom:7px;}
+.tech-name{font-family:'Share Tech Mono',monospace;font-size:clamp(0.56rem,1.8vw,0.66rem);color:var(--accent);letter-spacing:1px;margin-bottom:3px;}
+.tech-cat{font-size:clamp(0.6rem,1.8vw,0.7rem);color:var(--dim);}
+
+/* DASHBOARD */
+.dashboard{background:var(--panel);border:1px solid var(--border);overflow:hidden;}
+.dashboard-bar{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:rgba(0,212,255,0.05);border-bottom:1px solid var(--border);gap:8px;flex-wrap:wrap;}
+.dashboard-title{font-family:'Share Tech Mono',monospace;font-size:clamp(0.53rem,2vw,0.67rem);color:var(--accent);letter-spacing:2px;}
+.live-tag{font-family:'Share Tech Mono',monospace;font-size:0.56rem;color:var(--accent2);border:1px solid var(--accent2);padding:2px 8px;letter-spacing:2px;animation:blink 1.2s infinite;white-space:nowrap;}
+.dash-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);}
+@media(min-width:500px){.dash-stats{grid-template-columns:repeat(4,1fr);}}
+.dash-stat{background:var(--bg2);padding:16px 10px;text-align:center;}
+.dash-stat-val{font-family:'Orbitron',monospace;font-size:clamp(1.3rem,5vw,2rem);font-weight:700;}
+.d1{color:var(--accent2);text-shadow:var(--glow-red);}
+.d2{color:var(--warn);}
+.d3{color:var(--accent3);text-shadow:var(--glow-green);}
+.d4{color:var(--accent);text-shadow:var(--glow);}
+.dash-stat-label{font-family:'Share Tech Mono',monospace;font-size:clamp(0.5rem,1.6vw,0.6rem);color:var(--dim);letter-spacing:1px;margin-top:5px;}
+.event-log{padding:12px 14px;display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;}
+.event-log::-webkit-scrollbar{width:4px;}
+.event-log::-webkit-scrollbar-thumb{background:var(--border);}
+.log-row{font-family:'Share Tech Mono',monospace;font-size:clamp(0.58rem,1.9vw,0.68rem);padding:8px 11px;border-left:2px solid transparent;background:rgba(255,255,255,0.01);animation:slideIn 0.35s ease;display:flex;flex-direction:column;gap:3px;}
+@media(min-width:600px){.log-row{flex-direction:row;align-items:center;gap:10px;}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+.log-row.critical{border-left-color:var(--accent2);}
+.log-row.warn{border-left-color:var(--warn);}
+.log-row.ok{border-left-color:var(--accent3);}
+.log-row.info{border-left-color:var(--accent);}
+.log-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;flex-shrink:0;}
+.log-time{color:var(--dim);white-space:nowrap;}
+.log-svc{color:var(--accent);white-space:nowrap;}
+.log-msg{color:var(--text);flex:1;line-height:1.4;}
+.log-badge{font-size:0.53rem;padding:2px 6px;white-space:nowrap;flex-shrink:0;}
+.critical .log-badge{background:rgba(255,76,76,0.15);color:var(--accent2);border:1px solid var(--accent2);}
+.warn .log-badge{background:rgba(255,184,0,0.12);color:var(--warn);border:1px solid var(--warn);}
+.ok .log-badge{background:rgba(0,255,153,0.1);color:var(--accent3);border:1px solid var(--accent3);}
+.info .log-badge{background:rgba(0,212,255,0.1);color:var(--accent);border:1px solid var(--accent);}
+
+/* FUTURE */
+.future-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+@media(min-width:600px){.future-grid{grid-template-columns:repeat(3,1fr);}}
+.future-card{background:var(--panel);border:1px solid var(--border);padding:15px;display:flex;align-items:flex-start;gap:12px;transition:all 0.3s;}
+.future-card:hover{border-color:var(--purple);box-shadow:0 0 14px rgba(180,125,255,0.2);}
+.future-icon{font-size:1.3rem;flex-shrink:0;}
+.future-text{font-size:clamp(0.78rem,2.3vw,0.86rem);color:var(--dim);line-height:1.45;}
+.future-text strong{display:block;color:var(--purple);font-family:'Orbitron',monospace;font-size:clamp(0.58rem,1.8vw,0.66rem);letter-spacing:1.5px;margin-bottom:3px;}
+
+/* FOOTER */
+footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:26px 20px;margin-top:30px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;}
+@media(min-width:600px){footer{flex-direction:row;justify-content:space-between;text-align:left;}}
+.footer-logo{font-family:'Orbitron',monospace;font-size:0.88rem;font-weight:900;color:var(--accent);letter-spacing:3px;}
+.footer-info{font-family:'Share Tech Mono',monospace;font-size:clamp(0.52rem,1.8vw,0.62rem);color:var(--dim);line-height:1.9;letter-spacing:1px;}
+
+/* UTILS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.mono{font-family:'Share Tech Mono',monospace;color:var(--accent);}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">CLOUD<span>GUARD</span></div>
+  <div class="nav-links" id="navLinks">
+    <a href="#accounts"    onclick="closeNav()">ACCOUNTS</a>
+    <a href="#detection"   onclick="closeNav()">DETECTION</a>
+    <a href="#remediation" onclick="closeNav()">REMEDIATION</a>
+    <a href="#flow"        onclick="closeNav()">EVENT FLOW</a>
+    <a href="#stack"       onclick="closeNav()">TECH STACK</a>
+    <a href="#dashboard"   onclick="closeNav()">DASHBOARD</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="status-badge"><div class="status-dot"></div>ACTIVE</div>
+    <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <span class="ticker-inner">
+    ⚠ PutBucketAcl detected → EventBridge rule fired → Lambda re-enabled Block Public Access in 2.1s &nbsp;▸&nbsp;
+    ⚠ AuthorizeSecurityGroupIngress 0.0.0.0/0:22 → SSH rule auto-revoked via ec2:RevokeSecurityGroupIngress &nbsp;▸&nbsp;
+    ⚠ AttachRolePolicy: AdministratorAccess on dev-role → SNS alert dispatched to security team &nbsp;▸&nbsp;
+    ✓ Terraform state secured — DynamoDB lock active, KMS encryption ON, S3 versioning enabled &nbsp;▸&nbsp;
+    ✓ Org CloudTrail logs immutable — Object Lock + Versioning enforced in Logging Account &nbsp;▸&nbsp;
+    ✓ Cross-account deploy via STS AssumeRole — no direct production access &nbsp;▸
+  </span>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">// AWS PRODUCTION SIMULATED LAB — MULTI-ACCOUNT SECURITY ARCHITECTURE</div>
+  <h1>Automated Cloud<br><em>Security Detection</em><br>&amp; Remediation</h1>
+  <p class="hero-sub">
+    Real-time, event-driven cloud security automation on AWS. Detects risky configurations —
+    public S3 buckets, exposed security groups, unauthorized IAM changes —
+    and automatically remediates them in seconds. No human intervention required.
+  </p>
+
+  <div class="pipeline-label">
+    <div class="pipe-step detect">DETECT</div>
+    <div class="pipe-arrow">▶</div>
+    <div class="pipe-step remediate">REMEDIATE</div>
+    <div class="pipe-arrow">▶</div>
+    <div class="pipe-step deploy">SECURE DEPLOY</div>
+  </div>
+
+  <div class="hero-metrics">
+    <div class="metric">
+      <div class="metric-val c1 counter" data-target="3">0</div>
+      <div class="metric-label">AWS ACCOUNTS</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val c2 counter" data-target="12">0</div>
+      <div class="metric-label">AWS SERVICES</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val c3">&lt;5s</div>
+      <div class="metric-label">RESPONSE TIME</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val c4 counter" data-target="100">0</div>
+      <div class="metric-label">% AUTO-FIXED</div>
+    </div>
+  </div>
+</div>
+
+<!-- 01 ACCOUNTS -->
+<section id="accounts">
+  <div class="section-header reveal">
+    <div class="section-num">// 01</div>
+    <div class="section-title">Multi-Account Architecture</div>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="accounts-grid reveal">
+    <div class="account-card prod">
+      <div class="account-header">
+        <div class="account-icon">🖥️</div>
+        <div>
+          <div class="account-name">PRODUCTION ACCOUNT</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:0.58rem;color:var(--dim);margin-top:2px;letter-spacing:1px;">WHERE SECURITY EVENTS OCCUR</div>
+        </div>
+      </div>
+      <div class="account-body">
+        <p class="account-desc">Hosts the actual infrastructure. CloudTrail records every API call. EventBridge watches for risky events and triggers Lambda remediation functions in real time.</p>
+        <div class="chip-label">MONITORED RESOURCES</div>
+        <div class="resource-chips">
+          <span class="chip">AWS IAM</span><span class="chip">S3 Buckets</span>
+          <span class="chip">VPC Security Groups</span><span class="chip">CloudTrail</span>
+          <span class="chip">EventBridge</span><span class="chip">Lambda</span>
+        </div>
+        <div class="chip-label warn">MONITORED EVENTS</div>
+        <div class="resource-chips">
+          <span class="chip" style="border-color:rgba(255,184,0,0.3);color:var(--warn);">PutBucketPolicy</span>
+          <span class="chip" style="border-color:rgba(255,184,0,0.3);color:var(--warn);">AttachRolePolicy</span>
+          <span class="chip" style="border-color:rgba(255,184,0,0.3);color:var(--warn);">AuthorizeSecurityGroupIngress</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="account-card log">
+      <div class="account-header">
+        <div class="account-icon">📁</div>
+        <div>
+          <div class="account-name">LOGGING ACCOUNT</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:0.58rem;color:var(--dim);margin-top:2px;letter-spacing:1px;">IMMUTABLE AUDIT TRAIL</div>
+        </div>
+      </div>
+      <div class="account-body">
+        <p class="account-desc">Centralized, tamper-proof log storage. Even if production is compromised, audit logs remain safe. Org-wide CloudTrail logs flow here automatically.</p>
+        <div class="chip-label">LOG SOURCES</div>
+        <div class="resource-chips">
+          <span class="chip">Org CloudTrail Logs</span>
+          <span class="chip">Lambda Execution Logs</span>
+          <span class="chip">Security Automation Logs</span>
+        </div>
+        <div class="chip-label">SECURITY CONTROLS</div>
+        <div class="resource-chips">
+          <span class="chip" style="border-color:rgba(0,255,153,0.3);color:var(--accent3);">S3 Object Lock</span>
+          <span class="chip" style="border-color:rgba(0,255,153,0.3);color:var(--accent3);">S3 Versioning</span>
+          <span class="chip" style="border-color:rgba(0,255,153,0.3);color:var(--accent3);">KMS Encryption</span>
+          <span class="chip" style="border-color:rgba(0,255,153,0.3);color:var(--accent3);">Centralized S3 Bucket</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="account-card dep">
+      <div class="account-header">
+        <div class="account-icon">🚀</div>
+        <div>
+          <div class="account-name">DEPLOYMENT ACCOUNT</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:0.58rem;color:var(--dim);margin-top:2px;letter-spacing:1px;">INFRASTRUCTURE AS CODE</div>
+        </div>
+      </div>
+      <div class="account-body">
+        <p class="account-desc">Manages infrastructure across all accounts via Terraform + CI/CD. Uses STS AssumeRole to deploy securely — no direct production access needed.</p>
+        <div class="chip-label purple">IaC COMPONENTS</div>
+        <div class="resource-chips">
+          <span class="chip" style="border-color:rgba(180,125,255,0.3);color:var(--purple);">Terraform</span>
+          <span class="chip" style="border-color:rgba(180,125,255,0.3);color:var(--purple);">S3 State Storage</span>
+          <span class="chip" style="border-color:rgba(180,125,255,0.3);color:var(--purple);">DynamoDB Lock</span>
+          <span class="chip" style="border-color:rgba(180,125,255,0.3);color:var(--purple);">AWS KMS</span>
+          <span class="chip" style="border-color:rgba(180,125,255,0.3);color:var(--purple);">CI/CD Pipeline</span>
+          <span class="chip" style="border-color:rgba(180,125,255,0.3);color:var(--purple);">STS AssumeRole</span>
+          <span class="chip" style="border-color:rgba(180,125,255,0.3);color:var(--purple);">Pipeline Role</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 DETECTION -->
+<section id="detection">
+  <div class="section-header reveal">
+    <div class="section-num">// 02</div>
+    <div class="section-title">Detection Engine — EventBridge</div>
+    <div class="section-line"></div>
+  </div>
+  <p class="reveal" style="font-size:clamp(0.85rem,2.5vw,1rem);color:var(--dim);margin-bottom:22px;line-height:1.7;max-width:800px;">
+    Amazon EventBridge listens to CloudTrail events in real time. When a risky API call occurs, EventBridge rules filter and route it to the correct Lambda remediation function — automatically, within seconds.
+  </p>
+  <div class="detection-grid reveal">
+    <div class="event-group">
+      <div class="event-group-title">🪣 S3 EXPOSURE EVENTS</div>
+      <ul class="event-list">
+        <li>PutBucketPolicy</li>
+        <li>PutBucketAcl</li>
+        <li>DeletePublicAccessBlock</li>
+      </ul>
+    </div>
+    <div class="event-group">
+      <div class="event-group-title">🔑 IAM CHANGE EVENTS</div>
+      <ul class="event-list">
+        <li>AttachRolePolicy</li>
+        <li>PutRolePolicy</li>
+        <li>CreateAccessKey</li>
+      </ul>
+    </div>
+    <div class="event-group">
+      <div class="event-group-title">🛡️ SECURITY GROUP EVENTS</div>
+      <ul class="event-list">
+        <li>AuthorizeSecurityGroupIngress</li>
+        <li>0.0.0.0/0 on port 22 (SSH)</li>
+        <li>0.0.0.0/0 on port 3306 (MySQL)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 03 REMEDIATION -->
+<section id="remediation">
+  <div class="section-header reveal">
+    <div class="section-num">// 03</div>
+    <div class="section-title">Automated Remediation — Lambda</div>
+    <div class="section-line"></div>
+  </div>
+  <p class="reveal" style="font-size:clamp(0.85rem,2.5vw,1rem);color:var(--dim);margin-bottom:22px;line-height:1.7;max-width:800px;">
+    Each Lambda function (Python) handles one specific remediation action. Tag-based governance prevents automation from accidentally breaking legitimate configurations.
+  </p>
+  <div class="remed-grid reveal">
+    <div class="remed-card">
+      <div class="remed-header"><div class="remed-icon">🪣</div><div class="remed-title">S3 PUBLIC BUCKET REMEDIATION</div></div>
+      <div class="remed-body">
+        <p>If a bucket becomes public, Lambda re-enables Block Public Access — unless tagged <span class="mono">intended-public=true</span>.</p>
+        <ul class="step-list">
+          <li><span class="step-num">1</span>Extract bucket name from CloudTrail event</li>
+          <li><span class="step-num">2</span>Check bucket tags for intended-public=true</li>
+          <li><span class="step-num">3</span>Enable BlockPublicAcls + IgnorePublicAcls</li>
+          <li><span class="step-num">4</span>Enable BlockPublicPolicy + RestrictPublicBuckets</li>
+        </ul>
+      </div>
+    </div>
+    <div class="remed-card">
+      <div class="remed-header"><div class="remed-icon">🛡️</div><div class="remed-title">SECURITY GROUP REMEDIATION</div></div>
+      <div class="remed-body">
+        <p>If a security group allows 0.0.0.0/0 on port 22 (SSH) or 3306 (MySQL), Lambda revokes only the unsafe rule.</p>
+        <ul class="step-list">
+          <li><span class="step-num">1</span>Identify the security group ID from event</li>
+          <li><span class="step-num">2</span>Extract the risky ingress rule details</li>
+          <li><span class="step-num">3</span>Call ec2:RevokeSecurityGroupIngress</li>
+          <li><span class="step-num">4</span>Log the action to centralized S3 bucket</li>
+        </ul>
+      </div>
+    </div>
+    <div class="remed-card">
+      <div class="remed-header"><div class="remed-icon">🔑</div><div class="remed-title">IAM PRIVILEGE MONITORING</div></div>
+      <div class="remed-body">
+        <p>Detects unexpected high-privilege IAM policy attachments. Logs the event, sends an SNS alert, and enables investigation.</p>
+        <ul class="step-list">
+          <li><span class="step-num">1</span>Detect AttachRolePolicy / PutRolePolicy</li>
+          <li><span class="step-num">2</span>Log event to immutable audit S3 bucket</li>
+          <li><span class="step-num">3</span>Publish SNS alert to security team</li>
+          <li><span class="step-num">4</span>Flag for incident investigation</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tag-callout reveal">
+    <div class="tag-callout-icon">🏷️</div>
+    <div>
+      <div class="tag-callout-title">TAG-BASED SECURITY GOVERNANCE</div>
+      <div class="tag-callout-body">
+        Tag <span class="mono">intended-public=true</span> on any resource to exempt it from auto-remediation.
+        This prevents breaking legitimate public configs (e.g. public websites) while still protecting unintended exposures.
+        This pattern is widely used in enterprise production AWS environments.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 FLOW -->
+<section id="flow">
+  <div class="section-header reveal">
+    <div class="section-num">// 04</div>
+    <div class="section-title">End-to-End Event Flow</div>
+    <div class="section-line"></div>
+  </div>
+  <p class="reveal" style="font-size:clamp(0.82rem,2.4vw,0.95rem);color:var(--dim);margin-bottom:18px;line-height:1.7;max-width:700px;">
+    Example: Engineer accidentally makes an S3 bucket public. The system responds — fully automatically — in under 5 seconds.
+  </p>
+  <div class="flow-container reveal">
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-box t1">
+          <div class="flow-emoji">⚠️</div>
+          <div class="flow-name">RISKY API CALL</div>
+          <div class="flow-sub">PutBucketAcl makes bucket public</div>
+        </div>
+      </div>
+      <div class="flow-arrow"><div class="arrow-sym">──▶</div></div>
+      <div class="flow-step">
+        <div class="flow-box t2">
+          <div class="flow-emoji">📋</div>
+          <div class="flow-name">CLOUDTRAIL</div>
+          <div class="flow-sub">Logs every API call org-wide</div>
+        </div>
+      </div>
+      <div class="flow-arrow"><div class="arrow-sym">──▶</div></div>
+      <div class="flow-step">
+        <div class="flow-box t3">
+          <div class="flow-emoji">⚡</div>
+          <div class="flow-name">EVENTBRIDGE</div>
+          <div class="flow-sub">Rule matches risky event pattern</div>
+        </div>
+      </div>
+      <div class="flow-arrow"><div class="arrow-sym">──▶</div></div>
+      <div class="flow-step">
+        <div class="flow-box t4">
+          <div class="flow-emoji">λ</div>
+          <div class="flow-name">LAMBDA</div>
+          <div class="flow-sub">Python checks tags &amp; remediates</div>
+        </div>
+      </div>
+      <div class="flow-arrow"><div class="arrow-sym">──▶</div></div>
+      <div class="flow-step">
+        <div class="flow-box t5">
+          <div class="flow-emoji">🛡️</div>
+          <div class="flow-name">REMEDIATED</div>
+          <div class="flow-sub">Block Public Access enabled</div>
+        </div>
+      </div>
+      <div class="flow-arrow"><div class="arrow-sym">──▶</div></div>
+      <div class="flow-step">
+        <div class="flow-box t6">
+          <div class="flow-emoji">📣</div>
+          <div class="flow-name">SNS ALERT</div>
+          <div class="flow-sub">Security team notified instantly</div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-badges">
+      <span class="badge" style="color:var(--accent3);border-color:var(--accent3);">✓ Response Time &lt; 5 Seconds</span>
+      <span class="badge" style="color:var(--accent);border-color:var(--accent);">✓ Zero Human Intervention</span>
+      <span class="badge" style="color:var(--warn);border-color:var(--warn);">✓ Immutable Audit Log Created</span>
+      <span class="badge" style="color:var(--purple);border-color:var(--purple);">✓ Cross-Account Isolation</span>
+    </div>
+  </div>
+</section>
+
+<!-- 05 PRINCIPLES -->
+<section id="principles">
+  <div class="section-header reveal">
+    <div class="section-num">// 05</div>
+    <div class="section-title">Security Principles</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="principles-grid reveal">
+    <div class="principle-card">
+      <div class="principle-icon">🔒</div>
+      <div class="principle-name">LEAST PRIVILEGE</div>
+      <div class="principle-desc">Each Lambda gets only the exact permissions needed — s3:PutBucketPublicAccessBlock, ec2:RevokeSecurityGroupIngress. Nothing more.</div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-icon">📜</div>
+      <div class="principle-name">IMMUTABLE LOGGING</div>
+      <div class="principle-desc">S3 Object Lock + Versioning + KMS Encryption. Attackers cannot delete or modify audit trails even if production is compromised.</div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-icon">⚡</div>
+      <div class="principle-name">EVENT-DRIVEN</div>
+      <div class="principle-desc">Responses triggered by real infrastructure events, not scheduled scans. Real-time detection with sub-5-second remediation.</div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-icon">🏗️</div>
+      <div class="principle-name">MULTI-ACCOUNT ISOLATION</div>
+      <div class="principle-desc">Production, Logging, and Deployment are separate AWS accounts. A compromise in one cannot easily spread to others — limited blast radius.</div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-icon">🏷️</div>
+      <div class="principle-name">TAG GOVERNANCE</div>
+      <div class="principle-desc">Tag-based exemptions prevent false positives. intended-public=true skips remediation for approved resources.</div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-icon">🔄</div>
+      <div class="principle-name">INFRASTRUCTURE AS CODE</div>
+      <div class="principle-desc">All resources deployed via Terraform — reproducible, auditable, version-controlled. State locked with DynamoDB, encrypted with KMS.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 TECH STACK -->
+<section id="stack">
+  <div class="section-header reveal">
+    <div class="section-num">// 06</div>
+    <div class="section-title">Technology Stack</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="tech-grid reveal">
+    <div class="tech-card"><div class="tech-icon">📋</div><div class="tech-name">CLOUDTRAIL</div><div class="tech-cat">API Audit Logging</div></div>
+    <div class="tech-card"><div class="tech-icon">⚡</div><div class="tech-name">EVENTBRIDGE</div><div class="tech-cat">Event Routing</div></div>
+    <div class="tech-card"><div class="tech-icon">λ</div><div class="tech-name">LAMBDA</div><div class="tech-cat">Serverless Automation</div></div>
+    <div class="tech-card"><div class="tech-icon">🪣</div><div class="tech-name">AMAZON S3</div><div class="tech-cat">Storage + Logging</div></div>
+    <div class="tech-card"><div class="tech-icon">🔑</div><div class="tech-name">AWS IAM</div><div class="tech-cat">Access Control</div></div>
+    <div class="tech-card"><div class="tech-icon">🔐</div><div class="tech-name">AWS KMS</div><div class="tech-cat">Encryption Keys</div></div>
+    <div class="tech-card"><div class="tech-icon">🗄️</div><div class="tech-name">DYNAMODB</div><div class="tech-cat">Terraform State Lock</div></div>
+    <div class="tech-card"><div class="tech-icon">🔁</div><div class="tech-name">AWS STS</div><div class="tech-cat">Cross-Account Roles</div></div>
+    <div class="tech-card"><div class="tech-icon">🏗️</div><div class="tech-name">TERRAFORM</div><div class="tech-cat">Infrastructure as Code</div></div>
+    <div class="tech-card"><div class="tech-icon">🐍</div><div class="tech-name">PYTHON</div><div class="tech-cat">Lambda Functions</div></div>
+    <div class="tech-card"><div class="tech-icon">🐙</div><div class="tech-name">GITHUB</div><div class="tech-cat">Source Control</div></div>
+    <div class="tech-card"><div class="tech-icon">🚀</div><div class="tech-name">CI/CD PIPELINE</div><div class="tech-cat">Secure Deployment</div></div>
+  </div>
+</section>
+
+<!-- 07 DASHBOARD -->
+<section id="dashboard">
+  <div class="section-header reveal">
+    <div class="section-num">// 07</div>
+    <div class="section-title">Live Security Dashboard</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="dashboard reveal">
+    <div class="dashboard-bar">
+      <div class="dashboard-title">SECURITY OPERATIONS CENTER — REAL-TIME SIMULATION</div>
+      <div class="live-tag">● LIVE</div>
+    </div>
+    <div class="dash-stats">
+      <div class="dash-stat"><div class="dash-stat-val d1" id="tc">0</div><div class="dash-stat-label">THREATS DETECTED</div></div>
+      <div class="dash-stat"><div class="dash-stat-val d2" id="ac">0</div><div class="dash-stat-label">EVENTS TRIGGERED</div></div>
+      <div class="dash-stat"><div class="dash-stat-val d3" id="fc">0</div><div class="dash-stat-label">AUTO-REMEDIATED</div></div>
+      <div class="dash-stat"><div class="dash-stat-val d4">99.9%</div><div class="dash-stat-label">SECURITY SCORE</div></div>
+    </div>
+    <div class="event-log" id="event-log"></div>
+  </div>
+</section>
+
+<!-- 08 FUTURE -->
+<section id="future">
+  <div class="section-header reveal">
+    <div class="section-num">// 08</div>
+    <div class="section-title">Future Improvements</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="future-grid reveal">
+    <div class="future-card"><div class="future-icon">💬</div><div class="future-text"><strong>SLACK ALERTS</strong>Real-time push notifications to security Slack channels</div></div>
+    <div class="future-card"><div class="future-icon">🕵️</div><div class="future-text"><strong>GUARDDUTY</strong>ML-powered threat intelligence for advanced attack patterns</div></div>
+    <div class="future-card"><div class="future-icon">☸️</div><div class="future-text"><strong>KUBERNETES</strong>Extend monitoring to EKS workloads and container security</div></div>
+    <div class="future-card"><div class="future-icon">🤖</div><div class="future-text"><strong>AI ANOMALY DETECTION</strong>Bedrock-powered behavioral anomaly detection</div></div>
+    <div class="future-card"><div class="future-icon">📊</div><div class="future-text"><strong>SIEM INTEGRATION</strong>Feed security events into a centralized SIEM platform</div></div>
+    <div class="future-card"><div class="future-icon">🔭</div><div class="future-text"><strong>SECURITY HUB</strong>Aggregate all findings into AWS Security Hub dashboard</div></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">CLOUDGUARD</div>
+  <div class="footer-info">
+    PROJECT: AUTOMATED CLOUD SECURITY DETECTION &amp; REMEDIATION PLATFORM<br>
+    ARCHITECTURE: MULTI-ACCOUNT AWS · PRODUCTION · LOGGING · DEPLOYMENT<br>
+    STACK: CLOUDTRAIL · EVENTBRIDGE · LAMBDA · TERRAFORM · PYTHON
+  </div>
+</footer>
+
+<script>
+function toggleNav(){document.getElementById('navLinks').classList.toggle('open');}
+function closeNav(){document.getElementById('navLinks').classList.remove('open');}
+document.addEventListener('click',e=>{
+  const n=document.getElementById('navLinks'),b=document.getElementById('hamburger');
+  if(!n.contains(e.target)&&!b.contains(e.target))n.classList.remove('open');
+});
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{if(e.isIntersecting)setTimeout(()=>e.target.classList.add('visible'),i*70);});
+},{threshold:0.07});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+function animCount(el,target,dur=1600){
+  let v=0;const step=target/(dur/16);
+  const t=setInterval(()=>{v=Math.min(v+step,target);el.textContent=Math.floor(v);if(v>=target)clearInterval(t);},16);
+}
+document.querySelectorAll('.counter').forEach(el=>animCount(el,+el.dataset.target));
+
+let tc=0,ac=0,fc=0;
+function incDash(r){
+  if(r<0.5){tc++;document.getElementById('tc').textContent=tc;}
+  if(r<0.6){ac++;document.getElementById('ac').textContent=ac;}
+  if(r<0.45){fc++;document.getElementById('fc').textContent=fc;}
 }
 
-.logo {
-  font-family:'Orbitron',monospace;
-  font-size:clamp(0.8rem,3.5vw,1.05rem);
-  font-weight:900; color:var(--accent);
-  text-shadow:var(--glow); letter-spacing:2px; white-space:nowrap;
-}
-.logo span { color:var(--accent2); }
+const logs=[
+  {type:'critical',time:'14:32:01',svc:'CloudTrail',msg:'PutBucketAcl → my-data-bucket set to public-read',badge:'THREAT'},
+  {type:'info',time:'14:32:01',svc:'EventBridge',msg:'S3PublicExposure rule matched → Lambda:s3-remediation invoked',badge:'ROUTED'},
+  {type:'ok',time:'14:32:03',svc:'Lambda',msg:'Tag check: intended-public=false → BlockPublicAcls enabled on my-data-bucket',badge:'FIXED'},
+  {type:'critical',time:'14:35:11',svc:'CloudTrail',msg:'AuthorizeSecurityGroupIngress 0.0.0.0/0:22 on sg-0fa2c3b1',badge:'THREAT'},
+  {type:'info',time:'14:35:11',svc:'EventBridge',msg:'SGPublicIngress rule matched → Lambda:sg-remediation invoked',badge:'ROUTED'},
+  {type:'ok',time:'14:35:13',svc:'Lambda',msg:'ec2:RevokeSecurityGroupIngress executed — SSH rule removed from sg-0fa2c3b1',badge:'FIXED'},
+  {type:'critical',time:'14:38:44',svc:'CloudTrail',msg:'AttachRolePolicy: AdministratorAccess attached to dev-role by user john',badge:'THREAT'},
+  {type:'warn',time:'14:38:44',svc:'Lambda',msg:'High-privilege IAM change flagged — logging event + raising alert',badge:'ALERT'},
+  {type:'info',time:'14:38:45',svc:'SNS',msg:'Security alert dispatched → security-team@company.com + #sec-alerts Slack',badge:'NOTIFIED'},
+  {type:'ok',time:'14:41:02',svc:'S3 Logs',msg:'All remediation events written to centralized log bucket (Object Lock: ON)',badge:'LOGGED'},
+];
 
-.status-badge {
-  display:flex; align-items:center; gap:6px;
-  font-family:'Share Tech Mono',monospace;
-  font-size:clamp(0.52rem,1.8vw,0.68rem);
-  color:var(--accent3); white-space:nowrap;
+const logEl=document.getElementById('event-log');
+let li=0;
+function addLog(){
+  if(li>=logs.length)return;
+  const e=logs[li++];
+  const d=document.createElement('div');
+  d.className=`log-row ${e.type}`;
+  d.innerHTML=`<div class="log-meta"><span class="log-time">${e.time}</span><span class="log-svc">${e.svc}</span><span class="log-badge">${e.badge}</span></div><span class="log-msg">${e.msg}</span>`;
+  logEl.prepend(d);
+  incDash(Math.random());
+  if(li<logs.length)setTimeout(addLog,1400+Math.random()*900);
 }
-.status-dot {
-  width:7px; height:7px; border-radius:50%;
-  background:var(--accent3); box-shadow:0 0 8px var(--accent3);
-  animation:blink 1.4s ease-in-out infinite; flex-shrink:0;
-}
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
-
-.nav-links {
-  display:none;
-  position:fixed; top:54px; left:0; right:0;
-  background:rgba(2,11,20,0.98);
-  border-bottom:1px solid var(--border);
-  padding:16px 20px;
-  flex-direction:column; gap:0; z-index:999;
-}
-.nav-links.open { display:flex; }
-.nav-links a {
-  font-family:'Share Tech Mono',monospace;
-  font-size:0.75rem; color:var(--dim);
-  text-decoration:none; letter-spacing:2px;
-  padding:12px 0; border-bottom:1px solid var(--border);
-  transition:color 0.2s;
-}
-.nav-links a:last-child { border-bottom:none; }
-.nav-links a:hover { color:var(--accent); }
-
-.hamburger {
-  display:flex; flex-direction:column; gap:5px;
-  cursor:pointer; background:none; border:none; padding:4px;
-}
-.hamburger span { display:block; width:22px; height:2px; background:var(--accent); }
-
-@media(min-width:640px) {
-  .hamburger { display:none; }
-  .nav-links {
-    display:flex !important; position:static;
-    flex-direction:row; gap:20px; padding:0;
-    background:none; border:none;
-  }
-  .nav-links a { border:none; padding:0; font-size:0.68rem; }
-}
-
-/* \u2500\u2500 TICKER \u2500\u2500 */
-.ticker-wrap {
-  margin-top:54px;
-  background:rgba(255,76,76,0.07);
-  border-top:1px solid rgba(255,76,76,0.2);
-  border-bottom:1px solid rgba(255,76,76,0.2);
-  padding:9px 0; overflow:hidden; white-space:nowrap;
-  position:relative; z-index:1;
-}
-.ticker-inner {
-  display:inline-block;
-  animation:ticker 40s linear infinite;
-  font-family:'Share Tech Mono',monospace;
-  font-size:clamp(0.58rem,2vw,0.7rem);
-  color:var(--accent2); letter-spacing:1.5px; padding-right:60px;
-}
-@keyframes ticker { from{transform:translateX(100vw)} to{transform:translateX(-100%)} }
-
-/* \u2500\u2500 HERO \u2500\u2500 */
-.hero {
-  position:relative; z-index:1;
-  display:flex; flex-direction:column; align-items:center;
-  text-align:center; padding:52px 20px 60px;
-}
-
-.hero-eyebrow {
-  font-family:'Share Tech Mono',monospace;
-  font-size:clamp(0.58rem,2.2vw,0.72rem);
-  letter-spacing:4px; color:var(--accent);
-  margin-bottom:20px; animation:fadeUp 0.8s ease both;
-}
-
-.hero h1 {
-  font-family:'Orbitron',monospace;
-  font-size:clamp(1.45rem,5.5vw,3.6rem);
-  font-weight:900; line-height:1.12;
-  letter-spacing:1px; text-transform:uppercase;
-  color:#fff; animation:fadeUp 0.8s 0.1s ease both;
-  max-width:780px;
-}
-.hero h1 em { font-style:normal; color:var(--accent); text-shadow:var(--glow); }
-
-.hero-sub {
-  margin-top:16px;
-  font-size:clamp(0.9rem,2.8vw,1.05rem);
-  color:var(--dim); max-width:600px; line-height:1.65;
-  animation:fadeUp 0.8s 0.2s ease both; padding:0 8px;
-}
-
-.pipeline-label {
-  margin-top:32px;
-  display:flex; flex-wrap:wrap; align-items:center;
-  justify-content:center; gap:6px;
-  animation:fadeUp 0.8s 0.3s ease both;
-}
-.pipe-step {
-  padding:8px 18px; border:1px solid;
-  font-family:'Share Tech Mono',monospace;
-  font-size:clamp(0.62rem,2.2vw,0.78rem);
-  letter-spacing:2px; background:var(--panel);
-}
-.pipe-step.detect   { color:var(--warn);    border-color:var(--warn); }
-.pipe-step.remediate{ color:var(--accent2); border-color:var(--accent2); }
-.pipe-step.deploy   { color:var(--accent3); border-color:var(--accent3); }
-.pipe-arrow { color
+setTimeout(addLog,1000);
+</script>
+</body>
+</html>
