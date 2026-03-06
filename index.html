@@ -2,1387 +2,184 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CloudGuard — Event-Driven Security Automation on AWS</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;600;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>AWS Cloud Security Automation Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-/* ══════════════════════════════════════════
-   ROOT & RESET
-══════════════════════════════════════════ */
 :root {
-  --bg:       #040c18;
-  --bg2:      #070f1f;
-  --surface:  #0b1828;
-  --panel:    #0e1f33;
-  --border:   #152d47;
-  --border2:  #1a3a5c;
-
-  --cyan:    #00c8f0;
-  --orange:  #f07020;
-  --green:   #00e096;
-  --red:     #ff4560;
-  --yellow:  #ffc022;
-  --purple:  #a78bfa;
-
-  --text:    #cce4f8;
-  --muted:   #4a7a9b;
-  --white:   #f0f8ff;
-
-  --glow-c: 0 0 24px rgba(0,200,240,0.25);
-  --glow-o: 0 0 24px rgba(240,112,32,0.3);
-  --glow-g: 0 0 24px rgba(0,224,150,0.25);
+  --bg: #020b14;
+  --bg2: #040f1c;
+  --panel: #071828;
+  --border: #0f3050;
+  --accent: #00d4ff;
+  --accent2: #ff4c4c;
+  --accent3: #00ff99;
+  --warn: #ffb800;
+  --purple: #b47dff;
+  --orange: #ff9500;
+  --text: #c8e8ff;
+  --dim: #4a7a9b;
+  --glow: 0 0 20px rgba(0,212,255,0.3);
+  --glow-red: 0 0 20px rgba(255,76,76,0.4);
+  --glow-green: 0 0 20px rgba(0,255,153,0.3);
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior: smooth; }
 
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Syne', sans-serif;
+  font-family: 'Rajdhani', sans-serif;
   overflow-x: hidden;
-  line-height: 1.6;
 }
 
-/* Subtle grid bg */
 body::before {
-  content: '';
-  position: fixed; inset: 0;
+  content:'';
+  position:fixed; inset:0;
   background-image:
-    linear-gradient(rgba(0,200,240,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,200,240,0.025) 1px, transparent 1px);
-  background-size: 48px 48px;
-  pointer-events: none; z-index: 0;
+    linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index:0; pointer-events:none;
 }
 
-/* Scanlines */
 body::after {
-  content: '';
-  position: fixed; inset: 0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.08) 3px, rgba(0,0,0,0.08) 4px);
-  pointer-events: none; z-index: 9999;
+  content:'';
+  position:fixed; inset:0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+  pointer-events:none; z-index:9999;
 }
 
-/* ══════════════════════════════════════════
-   NAV
-══════════════════════════════════════════ */
+/* \u2500\u2500 NAV \u2500\u2500 */
 nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 24px;
-  background: rgba(4,12,24,0.92);
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(16px);
-  gap: 16px;
+  position:fixed; top:0; left:0; right:0;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:13px 20px;
+  background:rgba(2,11,20,0.96);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(14px);
+  z-index:1000; gap:12px;
 }
 
-.nav-logo {
-  font-family: 'Syne Mono', monospace;
-  font-size: clamp(0.85rem, 2.5vw, 1rem);
-  color: var(--cyan);
-  letter-spacing: 3px;
-  white-space: nowrap;
-  flex-shrink: 0;
+.logo {
+  font-family:'Orbitron',monospace;
+  font-size:clamp(0.8rem,3.5vw,1.05rem);
+  font-weight:900; color:var(--accent);
+  text-shadow:var(--glow); letter-spacing:2px; white-space:nowrap;
 }
+.logo span { color:var(--accent2); }
 
-.nav-logo span { color: var(--orange); }
+.status-badge {
+  display:flex; align-items:center; gap:6px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(0.52rem,1.8vw,0.68rem);
+  color:var(--accent3); white-space:nowrap;
+}
+.status-dot {
+  width:7px; height:7px; border-radius:50%;
+  background:var(--accent3); box-shadow:0 0 8px var(--accent3);
+  animation:blink 1.4s ease-in-out infinite; flex-shrink:0;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
 
 .nav-links {
-  display: flex; gap: clamp(12px, 2vw, 28px);
-  list-style: none;
-  overflow-x: auto;
-  scrollbar-width: none;
+  display:none;
+  position:fixed; top:54px; left:0; right:0;
+  background:rgba(2,11,20,0.98);
+  border-bottom:1px solid var(--border);
+  padding:16px 20px;
+  flex-direction:column; gap:0; z-index:999;
 }
-
-.nav-links::-webkit-scrollbar { display: none; }
-
+.nav-links.open { display:flex; }
 .nav-links a {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.68rem; letter-spacing: 1.5px;
-  color: var(--muted); text-decoration: none;
-  white-space: nowrap;
-  transition: color 0.2s;
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.75rem; color:var(--dim);
+  text-decoration:none; letter-spacing:2px;
+  padding:12px 0; border-bottom:1px solid var(--border);
+  transition:color 0.2s;
+}
+.nav-links a:last-child { border-bottom:none; }
+.nav-links a:hover { color:var(--accent); }
+
+.hamburger {
+  display:flex; flex-direction:column; gap:5px;
+  cursor:pointer; background:none; border:none; padding:4px;
+}
+.hamburger span { display:block; width:22px; height:2px; background:var(--accent); }
+
+@media(min-width:640px) {
+  .hamburger { display:none; }
+  .nav-links {
+    display:flex !important; position:static;
+    flex-direction:row; gap:20px; padding:0;
+    background:none; border:none;
+  }
+  .nav-links a { border:none; padding:0; font-size:0.68rem; }
 }
 
-.nav-links a:hover { color: var(--cyan); }
-
-.nav-status {
-  display: flex; align-items: center; gap: 7px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.62rem; color: var(--green);
-  white-space: nowrap; flex-shrink: 0;
-}
-
-.pulse-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--green); box-shadow: 0 0 8px var(--green);
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
-
-/* ══════════════════════════════════════════
-   TICKER
-══════════════════════════════════════════ */
+/* \u2500\u2500 TICKER \u2500\u2500 */
 .ticker-wrap {
-  position: relative; z-index: 1;
-  margin-top: 61px;
-  background: rgba(255,69,96,0.07);
-  border-top: 1px solid rgba(255,69,96,0.25);
-  border-bottom: 1px solid rgba(255,69,96,0.25);
-  padding: 9px 0; overflow: hidden;
+  margin-top:54px;
+  background:rgba(255,76,76,0.07);
+  border-top:1px solid rgba(255,76,76,0.2);
+  border-bottom:1px solid rgba(255,76,76,0.2);
+  padding:9px 0; overflow:hidden; white-space:nowrap;
+  position:relative; z-index:1;
 }
-
 .ticker-inner {
-  display: inline-block; white-space: nowrap;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem; color: var(--red);
-  letter-spacing: 1.5px;
-  animation: tickerScroll 35s linear infinite;
+  display:inline-block;
+  animation:ticker 40s linear infinite;
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(0.58rem,2vw,0.7rem);
+  color:var(--accent2); letter-spacing:1.5px; padding-right:60px;
 }
+@keyframes ticker { from{transform:translateX(100vw)} to{transform:translateX(-100%)} }
 
-@keyframes tickerScroll {
-  from { transform: translateX(100vw); }
-  to   { transform: translateX(-100%); }
-}
-
-/* ══════════════════════════════════════════
-   HERO
-══════════════════════════════════════════ */
+/* \u2500\u2500 HERO \u2500\u2500 */
 .hero {
-  position: relative; z-index: 1;
-  padding: clamp(60px, 10vw, 100px) clamp(20px, 5vw, 60px) clamp(50px, 8vw, 80px);
-  text-align: center;
-  display: flex; flex-direction: column; align-items: center; gap: 24px;
+  position:relative; z-index:1;
+  display:flex; flex-direction:column; align-items:center;
+  text-align:center; padding:52px 20px 60px;
 }
 
-.hero-tag {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: clamp(0.6rem, 1.5vw, 0.75rem);
-  letter-spacing: 5px; color: var(--cyan);
-  padding: 6px 16px; border: 1px solid var(--border2);
-  background: rgba(0,200,240,0.06);
-  animation: fadeUp 0.7s ease both;
+.hero-eyebrow {
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(0.58rem,2.2vw,0.72rem);
+  letter-spacing:4px; color:var(--accent);
+  margin-bottom:20px; animation:fadeUp 0.8s ease both;
 }
 
 .hero h1 {
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(2rem, 6vw, 4.5rem);
-  font-weight: 800; line-height: 1.08;
-  color: var(--white);
-  animation: fadeUp 0.7s 0.1s ease both;
-}
-
-.hero h1 .accent { color: var(--cyan); }
-.hero h1 .accent2 { color: var(--orange); }
-
-.hero-desc {
-  max-width: 640px;
-  font-size: clamp(0.9rem, 2vw, 1.05rem);
-  color: var(--muted); line-height: 1.7;
-  animation: fadeUp 0.7s 0.2s ease both;
-}
-
-/* Pipeline strip */
-.pipeline {
-  display: flex; align-items: center;
-  flex-wrap: wrap; justify-content: center;
-  gap: 4px;
-  animation: fadeUp 0.7s 0.3s ease both;
-}
-
-.pipe-box {
-  padding: 9px 20px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: clamp(0.62rem, 1.5vw, 0.75rem);
-  letter-spacing: 2px; border: 1px solid;
-  white-space: nowrap;
-}
-
-.pipe-box.d { color: var(--yellow); border-color: var(--yellow); background: rgba(255,192,34,0.07); }
-.pipe-box.r { color: var(--red);    border-color: var(--red);    background: rgba(255,69,96,0.07); }
-.pipe-box.s { color: var(--green);  border-color: var(--green);  background: rgba(0,224,150,0.07); }
-
-.pipe-arrow { color: var(--muted); font-size: 1.1rem; }
-
-/* Stats row */
-.hero-stats {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 24px 40px;
-  animation: fadeUp 0.7s 0.4s ease both;
-}
-
-.stat { text-align: center; }
-
-.stat-val {
-  font-family: 'Syne Mono', monospace;
-  font-size: clamp(1.6rem, 4vw, 2.4rem);
-  font-weight: 700;
-}
-
-.stat-val.c { color: var(--cyan);   text-shadow: var(--glow-c); }
-.stat-val.g { color: var(--green);  text-shadow: var(--glow-g); }
-.stat-val.o { color: var(--orange); text-shadow: var(--glow-o); }
-.stat-val.r { color: var(--red); }
-
-.stat-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem; letter-spacing: 2px; color: var(--muted);
-  margin-top: 4px;
-}
-
-/* ══════════════════════════════════════════
-   SECTION WRAPPER
-══════════════════════════════════════════ */
-.section {
-  position: relative; z-index: 1;
-  padding: clamp(48px, 8vw, 80px) clamp(16px, 5vw, 60px);
-  max-width: 1200px; margin: 0 auto;
-}
-
-.sec-hdr {
-  display: flex; align-items: center; gap: 14px;
-  margin-bottom: clamp(28px, 5vw, 48px);
-  flex-wrap: wrap;
-}
-
-.sec-num {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem; color: var(--cyan); letter-spacing: 3px;
-  white-space: nowrap;
-}
-
-.sec-title {
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(1.1rem, 3vw, 1.5rem);
-  font-weight: 700; color: var(--white);
-  letter-spacing: 1px;
-}
-
-.sec-line { flex: 1; height: 1px; background: linear-gradient(90deg, var(--border2), transparent); min-width: 20px; }
-
-/* ══════════════════════════════════════════
-   MULTI-ACCOUNT ARCHITECTURE
-══════════════════════════════════════════ */
-.accounts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-  gap: 16px;
-}
-
-.account-card {
-  border: 1px solid var(--border2);
-  background: var(--surface);
-  overflow: hidden;
-  position: relative;
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.account-card:hover { transform: translateY(-4px); }
-
-.account-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-}
-
-.account-card.prod::before   { background: var(--orange); }
-.account-card.log::before    { background: var(--cyan); }
-.account-card.deploy::before { background: var(--purple); }
-
-.acc-header {
-  padding: 18px 20px 14px;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 12px;
-}
-
-.acc-icon { font-size: 1.5rem; }
-
-.acc-name {
-  font-family: 'Syne', sans-serif;
-  font-size: 0.95rem; font-weight: 700; color: var(--white);
-}
-
-.acc-badge {
-  margin-left: auto;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.55rem; letter-spacing: 1.5px;
-  padding: 3px 8px; border-radius: 2px;
-}
-
-.prod .acc-badge   { background: rgba(240,112,32,0.15); color: var(--orange); border: 1px solid var(--orange); }
-.log  .acc-badge   { background: rgba(0,200,240,0.1);   color: var(--cyan);   border: 1px solid var(--cyan); }
-.deploy .acc-badge { background: rgba(167,139,250,0.1); color: var(--purple); border: 1px solid var(--purple); }
-
-.acc-body { padding: 18px 20px; }
-
-.acc-desc {
-  font-size: 0.85rem; color: var(--muted); margin-bottom: 16px; line-height: 1.6;
-}
-
-.svc-chips { display: flex; flex-wrap: wrap; gap: 7px; }
-
-.chip {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem; letter-spacing: 1px;
-  padding: 5px 10px;
-  border: 1px solid var(--border2);
-  background: var(--panel);
-  color: var(--text);
-  transition: all 0.2s; cursor: default;
-}
-
-.chip:hover { border-color: var(--cyan); color: var(--cyan); }
-
-.chip.orange:hover { border-color: var(--orange); color: var(--orange); }
-.chip.purple:hover { border-color: var(--purple); color: var(--purple); }
-
-/* ══════════════════════════════════════════
-   EVENT FLOW
-══════════════════════════════════════════ */
-.flow-container {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  padding: clamp(20px, 4vw, 40px);
-  overflow-x: auto;
-}
-
-.flow-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-  flex-wrap: nowrap;
-  min-width: 600px;
-}
-
-.flow-node {
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-  flex-shrink: 0;
-}
-
-.f-box {
-  width: 72px; height: 72px;
-  border: 1px solid; display: flex; align-items: center;
-  justify-content: center; font-size: 1.6rem;
-  position: relative; transition: all 0.3s;
-  cursor: default;
-}
-
-.f-box:hover { transform: scale(1.12); }
-
-.f-box.threat  { border-color: var(--red);    background: rgba(255,69,96,0.08); }
-.f-box.ct      { border-color: var(--yellow);  background: rgba(255,192,34,0.08); }
-.f-box.eb      { border-color: var(--cyan);    background: rgba(0,200,240,0.08); }
-.f-box.fn      { border-color: var(--orange);  background: rgba(240,112,32,0.08); }
-.f-box.fix     { border-color: var(--green);   background: rgba(0,224,150,0.08); }
-.f-box.notify  { border-color: var(--purple);  background: rgba(167,139,250,0.08); }
-
-/* pulse ring on threat */
-.f-box.threat::after {
-  content: ''; position: absolute; inset: -6px;
-  border: 1px solid var(--red); opacity: 0;
-  animation: ring 2s ease-out infinite;
-}
-
-@keyframes ring { 0%{inset:-2px;opacity:0.8} 100%{inset:-18px;opacity:0} }
-
-.f-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem; color: var(--muted);
-  text-align: center; letter-spacing: 0.5px;
-  line-height: 1.4;
-}
-
-.f-arrow {
-  display: flex; flex-direction: column; align-items: center;
-  color: var(--muted); font-size: 1.1rem;
-  padding: 0 4px; flex-shrink: 0; padding-bottom: 30px;
-}
-
-.f-arrow-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.52rem; color: var(--muted); margin-top: 2px;
-  white-space: nowrap; letter-spacing: 0.5px;
-}
-
-/* Time badge */
-.time-badge {
-  display: inline-block; margin-top: 20px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.72rem; letter-spacing: 2px;
-  padding: 8px 20px;
-  border: 1px solid var(--green); color: var(--green);
-  background: rgba(0,224,150,0.07);
-  text-align: center;
-}
-
-/* ══════════════════════════════════════════
-   DETECTION ENGINE
-══════════════════════════════════════════ */
-.events-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
-  gap: 12px;
-}
-
-.event-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 18px;
-  transition: all 0.3s;
-  position: relative;
-  overflow: hidden;
-}
-
-.event-card::after {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(0,200,240,0.04), transparent);
-  opacity: 0; transition: opacity 0.3s;
-}
-
-.event-card:hover { border-color: var(--cyan); transform: translateY(-3px); }
-.event-card:hover::after { opacity: 1; }
-
-.ev-category {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem; letter-spacing: 2px;
-  color: var(--cyan); margin-bottom: 10px;
-}
-
-.ev-title {
-  font-size: 0.92rem; font-weight: 700; color: var(--white);
-  margin-bottom: 10px;
-}
-
-.ev-apis { display: flex; flex-direction: column; gap: 5px; }
-
-.ev-api {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.68rem; color: var(--yellow);
-  padding: 4px 10px;
-  background: rgba(255,192,34,0.06);
-  border-left: 2px solid var(--yellow);
-}
-
-/* ══════════════════════════════════════════
-   REMEDIATION
-══════════════════════════════════════════ */
-.remediation-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
-  gap: 16px;
-}
-
-.rem-card {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  overflow: hidden;
-}
-
-.rem-header {
-  display: flex; align-items: center; gap: 12px;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border);
-}
-
-.rem-icon { font-size: 1.4rem; }
-
-.rem-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 0.9rem; font-weight: 700; color: var(--white);
-}
-
-.rem-body { padding: 18px 20px; }
-
-.rem-step {
-  display: flex; gap: 12px; align-items: flex-start;
-  margin-bottom: 10px;
-}
-
-.step-num {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem; color: var(--green);
-  background: rgba(0,224,150,0.1);
-  border: 1px solid var(--green);
-  width: 22px; height: 22px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-}
-
-.step-text {
-  font-size: 0.82rem; color: var(--text); line-height: 1.5; padding-top: 2px;
-}
-
-.rem-code {
-  margin-top: 14px; padding: 12px;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.68rem; color: var(--green);
-  line-height: 1.7;
-}
-
-/* ══════════════════════════════════════════
-   LIVE DASHBOARD
-══════════════════════════════════════════ */
-.dashboard {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  overflow: hidden;
-}
-
-.dash-topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 20px;
-  background: rgba(0,200,240,0.04);
-  border-bottom: 1px solid var(--border);
-  flex-wrap: wrap; gap: 8px;
-}
-
-.dash-title {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.68rem; color: var(--cyan); letter-spacing: 2px;
-}
-
-.live-dot {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem; color: var(--red);
-  border: 1px solid var(--red); padding: 2px 8px; letter-spacing: 2px;
-  animation: pulse 1s infinite;
-}
-
-.dash-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 1px; background: var(--border);
-}
-
-.dash-stat {
-  background: var(--bg2); padding: 20px 16px; text-align: center;
-}
-
-.ds-val {
-  font-family: 'Syne Mono', monospace;
-  font-size: clamp(1.5rem, 4vw, 2rem);
-  font-weight: 700;
-}
-
-.ds-val.red    { color: var(--red);    }
-.ds-val.yellow { color: var(--yellow); }
-.ds-val.green  { color: var(--green);  }
-.ds-val.cyan   { color: var(--cyan);   }
-
-.ds-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.58rem; letter-spacing: 1.5px; color: var(--muted); margin-top: 5px;
-}
-
-/* Log */
-.event-log-box {
-  padding: 16px 20px;
-  max-height: 280px; overflow-y: auto;
-  display: flex; flex-direction: column; gap: 6px;
-}
-
-.event-log-box::-webkit-scrollbar { width: 3px; }
-.event-log-box::-webkit-scrollbar-thumb { background: var(--border2); }
-
-.log-row {
-  display: grid;
-  grid-template-columns: 70px 1fr auto;
-  gap: 10px; align-items: center;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: clamp(0.6rem, 1.5vw, 0.7rem);
-  padding: 7px 10px;
-  border-left: 2px solid transparent;
-  background: rgba(255,255,255,0.01);
-  animation: slideIn 0.4s ease;
-}
-
-@keyframes slideIn { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:none} }
-
-.log-row.crit   { border-left-color: var(--red); }
-.log-row.warn   { border-left-color: var(--yellow); }
-.log-row.ok     { border-left-color: var(--green); }
-.log-row.info   { border-left-color: var(--cyan); }
-
-.log-time { color: var(--muted); }
-.log-msg  { color: var(--text); }
-
-.log-tag {
-  font-size: 0.55rem; padding: 2px 6px; border-radius: 2px; white-space: nowrap;
-}
-
-.crit .log-tag { background: rgba(255,69,96,0.15);   color: var(--red);    border: 1px solid var(--red); }
-.warn .log-tag { background: rgba(255,192,34,0.12);  color: var(--yellow); border: 1px solid var(--yellow); }
-.ok   .log-tag { background: rgba(0,224,150,0.1);    color: var(--green);  border: 1px solid var(--green); }
-.info .log-tag { background: rgba(0,200,240,0.1);    color: var(--cyan);   border: 1px solid var(--cyan); }
-
-/* ══════════════════════════════════════════
-   SECURITY PRINCIPLES
-══════════════════════════════════════════ */
-.principles-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-  gap: 12px;
-}
-
-.principle {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 22px 18px;
-  transition: all 0.3s;
-  position: relative;
-}
-
-.principle:hover {
-  border-color: var(--cyan);
-  box-shadow: var(--glow-c);
-  transform: translateY(-3px);
-}
-
-.pr-icon { font-size: 1.6rem; margin-bottom: 12px; }
-
-.pr-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 0.9rem; font-weight: 700;
-  color: var(--white); margin-bottom: 8px;
-}
-
-.pr-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
-
-/* ══════════════════════════════════════════
-   TECH STACK
-══════════════════════════════════════════ */
-.stack-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
-  gap: 12px;
-}
-
-.stack-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 20px 16px; text-align: center;
-  transition: all 0.3s; cursor: default;
-}
-
-.stack-card:hover {
-  border-color: var(--orange);
-  box-shadow: var(--glow-o);
-  transform: translateY(-3px);
-}
-
-.stack-icon { font-size: 1.8rem; margin-bottom: 10px; }
-
-.stack-name {
-  font-family: 'Syne Mono', monospace;
-  font-size: 0.75rem; color: var(--orange); letter-spacing: 1px;
-  margin-bottom: 5px;
-}
-
-.stack-role { font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
-
-/* ══════════════════════════════════════════
-   INFRASTRUCTURE AS CODE
-══════════════════════════════════════════ */
-.iac-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-  gap: 16px;
-}
-
-.iac-card {
-  background: var(--surface); border: 1px solid var(--border2);
-  padding: 24px 20px;
-}
-
-.iac-icon { font-size: 1.6rem; margin-bottom: 12px; }
-
-.iac-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 0.95rem; font-weight: 700; color: var(--white); margin-bottom: 8px;
-}
-
-.iac-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
-
-.iac-items { display: flex; flex-direction: column; gap: 5px; }
-
-.iac-item {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.68rem; color: var(--purple);
-  padding: 4px 10px;
-  background: rgba(167,139,250,0.06);
-  border-left: 2px solid var(--purple);
-}
-
-/* ══════════════════════════════════════════
-   FUTURE ROADMAP
-══════════════════════════════════════════ */
-.roadmap-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-  gap: 12px;
-}
-
-.roadmap-item {
-  background: var(--surface); border: 1px solid var(--border);
-  padding: 16px 18px; display: flex; gap: 12px; align-items: flex-start;
-  transition: all 0.3s;
-}
-
-.roadmap-item:hover { border-color: var(--cyan); }
-
-.ri-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
-
-.ri-text { font-size: 0.85rem; color: var(--text); line-height: 1.5; }
-
-/* ══════════════════════════════════════════
-   FOOTER
-══════════════════════════════════════════ */
-footer {
-  position: relative; z-index: 1;
-  border-top: 1px solid var(--border);
-  padding: clamp(24px, 4vw, 40px) clamp(16px, 5vw, 60px);
-  display: flex; flex-wrap: wrap; gap: 20px;
-  align-items: center; justify-content: space-between;
-}
-
-.footer-logo {
-  font-family: 'Syne Mono', monospace;
-  font-size: 1rem; color: var(--cyan); letter-spacing: 3px;
-}
-
-.footer-info {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.62rem; color: var(--muted);
-  line-height: 1.9; letter-spacing: 1px;
-  text-align: right;
-}
-
-@media (max-width: 480px) { .footer-info { text-align: left; } }
-
-/* ══════════════════════════════════════════
-   ANIMATIONS
-══════════════════════════════════════════ */
-@keyframes fadeUp {
-  from { opacity:0; transform:translateY(18px); }
-  to   { opacity:1; transform:translateY(0); }
-}
-
-.reveal {
-  opacity: 0; transform: translateY(22px);
-  transition: opacity 0.65s ease, transform 0.65s ease;
-}
-
-.reveal.in { opacity: 1; transform: translateY(0); }
-
-/* ══════════════════════════════════════════
-   DIVIDER
-══════════════════════════════════════════ */
-.divider {
-  position: relative; z-index: 1;
-  height: 1px; background: var(--border);
-  max-width: 1200px; margin: 0 auto;
-}
-</style>
-</head>
-<body>
-
-<!-- NAV -->
-<nav>
-  <div class="nav-logo">CLOUD<span>GUARD</span></div>
-  <ul class="nav-links">
-    <li><a href="#accounts">ACCOUNTS</a></li>
-    <li><a href="#flow">FLOW</a></li>
-    <li><a href="#detection">DETECTION</a></li>
-    <li><a href="#remediation">REMEDIATION</a></li>
-    <li><a href="#iac">IaC</a></li>
-    <li><a href="#stack">STACK</a></li>
-  </ul>
-  <div class="nav-status"><div class="pulse-dot"></div>LIVE</div>
-</nav>
-
-<!-- TICKER -->
-<div class="ticker-wrap">
-  <span class="ticker-inner">
-    ⚠ CloudTrail: PutBucketAcl detected — S3 public exposure &nbsp;▸&nbsp;
-    ✓ Lambda: BlockPublicAccess enabled in &lt;3s &nbsp;▸&nbsp;
-    ⚠ EventBridge: AuthorizeSecurityGroupIngress 0.0.0.0/0:22 &nbsp;▸&nbsp;
-    ✓ Lambda: RevokeSecurityGroupIngress executed — SSH closed &nbsp;▸&nbsp;
-    ⚠ CloudTrail: AttachRolePolicy — high-privilege policy detected &nbsp;▸&nbsp;
-    ✓ SNS Alert dispatched → Security team notified &nbsp;▸&nbsp;
-    ⚠ Config: DeletePublicAccessBlock API call detected &nbsp;▸&nbsp;
-    ✓ Centralized log immutably stored — Object Lock active &nbsp;▸
-  </span>
-</div>
-
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-tag">// AWS PRODUCTION SIMULATED LAB · MULTI-ACCOUNT ARCHITECTURE</div>
-  <h1>Event-Driven<br><span class="accent">Cloud Security</span><br><span class="accent2">Automation</span> on AWS</h1>
-  <p class="hero-desc">
-    A real-time, serverless security platform that automatically detects misconfigurations
-    across AWS infrastructure and remediates them in seconds — with zero manual intervention.
-  </p>
-  <div class="pipeline">
-    <div class="pipe-box d">DETECTION</div>
-    <div class="pipe-arrow">──▶</div>
-    <div class="pipe-box r">REMEDIATION</div>
-    <div class="pipe-arrow">──▶</div>
-    <div class="pipe-box s">SECURE DEPLOY</div>
-  </div>
-  <div class="hero-stats">
-    <div class="stat">
-      <div class="stat-val c" id="c1">0</div>
-      <div class="stat-label">AWS SERVICES</div>
-    </div>
-    <div class="stat">
-      <div class="stat-val g" id="c2">0</div>
-      <div class="stat-label">AWS ACCOUNTS</div>
-    </div>
-    <div class="stat">
-      <div class="stat-val o" id="c3">0</div>
-      <div class="stat-label">AUTO-REMEDIATIONS</div>
-    </div>
-    <div class="stat">
-      <div class="stat-val r">&lt;5s</div>
-      <div class="stat-label">RESPONSE TIME</div>
-    </div>
-  </div>
-</div>
-
-<!-- ── SECTION 1: MULTI-ACCOUNT ARCH ── -->
-<div class="divider"></div>
-<div class="section" id="accounts">
-  <div class="sec-hdr reveal">
-    <span class="sec-num">// 01</span>
-    <span class="sec-title">Multi-Account Architecture</span>
-    <div class="sec-line"></div>
-  </div>
-
-  <div class="accounts-grid">
-    <!-- Production -->
-    <div class="account-card prod reveal">
-      <div class="acc-header">
-        <div class="acc-icon">🏭</div>
-        <div>
-          <div class="acc-name">Production Account</div>
-        </div>
-        <div class="acc-badge">PROD</div>
-      </div>
-      <div class="acc-body">
-        <p class="acc-desc">
-          Hosts all live infrastructure. AWS CloudTrail records every API call —
-          IAM changes, S3 policy updates, VPC security group modifications.
-          EventBridge routes risky events to Lambda for instant remediation.
-        </p>
-        <div class="svc-chips">
-          <span class="chip orange">AWS IAM</span>
-          <span class="chip orange">S3 Buckets</span>
-          <span class="chip orange">VPC Security Groups</span>
-          <span class="chip orange">CloudTrail</span>
-          <span class="chip orange">Amazon EventBridge</span>
-          <span class="chip orange">Lambda</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Logging -->
-    <div class="account-card log reveal">
-      <div class="acc-header">
-        <div class="acc-icon">📦</div>
-        <div>
-          <div class="acc-name">Logging Account</div>
-        </div>
-        <div class="acc-badge">LOG</div>
-      </div>
-      <div class="acc-body">
-        <p class="acc-desc">
-          Centralized, tamper-proof log storage. Receives org-wide CloudTrail logs.
-          S3 Object Lock + Versioning ensures logs are immutable.
-          Even if production is compromised, audit logs remain safe.
-        </p>
-        <div class="svc-chips">
-          <span class="chip">Org CloudTrail Logs</span>
-          <span class="chip">S3 Versioning</span>
-          <span class="chip">S3 Object Lock</span>
-          <span class="chip">AWS KMS Encryption</span>
-          <span class="chip">Centralized S3 Bucket</span>
-          <span class="chip">Lambda (Remediation)</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Deployment -->
-    <div class="account-card deploy reveal">
-      <div class="acc-header">
-        <div class="acc-icon">🚀</div>
-        <div>
-          <div class="acc-name">Deployment Account</div>
-        </div>
-        <div class="acc-badge">DEPLOY</div>
-      </div>
-      <div class="acc-body">
-        <p class="acc-desc">
-          Manages all Infrastructure as Code deployments via Terraform.
-          Uses STS AssumeRole for cross-account access. CI/CD pipeline
-          deploys securely without direct production access.
-        </p>
-        <div class="svc-chips">
-          <span class="chip purple">Terraform</span>
-          <span class="chip purple">Terraform State S3</span>
-          <span class="chip purple">DynamoDB State Lock</span>
-          <span class="chip purple">AWS KMS</span>
-          <span class="chip purple">STS AssumeRole</span>
-          <span class="chip purple">CI/CD Pipeline</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── SECTION 2: EVENT FLOW ── -->
-<div class="divider"></div>
-<div class="section" id="flow">
-  <div class="sec-hdr reveal">
-    <span class="sec-num">// 02</span>
-    <span class="sec-title">End-to-End Event Flow</span>
-    <div class="sec-line"></div>
-  </div>
-
-  <div class="flow-container reveal">
-    <div class="flow-row">
-      <div class="flow-node">
-        <div class="f-box threat">⚠️</div>
-        <div class="f-label">RISKY API<br>CALL</div>
-      </div>
-      <div class="f-arrow">──▶<div class="f-arrow-label">records</div></div>
-      <div class="flow-node">
-        <div class="f-box ct">📋</div>
-        <div class="f-label">CLOUD<br>TRAIL</div>
-      </div>
-      <div class="f-arrow">──▶<div class="f-arrow-label">routes</div></div>
-      <div class="flow-node">
-        <div class="f-box eb">⚡</div>
-        <div class="f-label">EVENT<br>BRIDGE</div>
-      </div>
-      <div class="f-arrow">──▶<div class="f-arrow-label">invokes</div></div>
-      <div class="flow-node">
-        <div class="f-box fn">λ</div>
-        <div class="f-label">LAMBDA<br>FUNCTION</div>
-      </div>
-      <div class="f-arrow">──▶<div class="f-arrow-label">fixes</div></div>
-      <div class="flow-node">
-        <div class="f-box fix">🛡️</div>
-        <div class="f-label">AUTO<br>REMEDIATE</div>
-      </div>
-      <div class="f-arrow">──▶<div class="f-arrow-label">alerts</div></div>
-      <div class="flow-node">
-        <div class="f-box notify">📣</div>
-        <div class="f-label">SNS<br>NOTIFY</div>
-      </div>
-    </div>
-    <div style="text-align:center;">
-      <div class="time-badge">⏱ Total Response Time: &lt; 5 seconds — Fully Automated</div>
-    </div>
-  </div>
-
-  <!-- Scenario example -->
-  <div style="margin-top:20px; background:var(--surface); border:1px solid var(--border2); padding:20px 22px;" class="reveal">
-    <div style="font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:var(--cyan); letter-spacing:2px; margin-bottom:14px;">// EXAMPLE SCENARIO: S3 PUBLIC EXPOSURE</div>
-    <div style="font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--text); line-height:2.2;">
-      <span style="color:var(--muted);">Engineer modifies S3 bucket policy</span><br>
-      &nbsp;&nbsp;↓ &nbsp;<span style="color:var(--yellow);">AWS API call → CloudTrail logs PutBucketAcl</span><br>
-      &nbsp;&nbsp;↓ &nbsp;<span style="color:var(--cyan);">EventBridge rule matches risky event</span><br>
-      &nbsp;&nbsp;↓ &nbsp;<span style="color:var(--orange);">Lambda: checks tag intended-public=true → NOT found</span><br>
-      &nbsp;&nbsp;↓ &nbsp;<span style="color:var(--green);">Lambda: enables S3 BlockPublicAccess on bucket</span><br>
-      &nbsp;&nbsp;↓ &nbsp;<span style="color:var(--purple);">SNS: security team alerted with event details</span><br>
-      &nbsp;&nbsp;↓ &nbsp;<span style="color:var(--green);">✓ Bucket is private again — logged immutably</span>
-    </div>
-  </div>
-</div>
-
-<!-- ── SECTION 3: DETECTION ENGINE ── -->
-<div class="divider"></div>
-<div class="section" id="detection">
-  <div class="sec-hdr reveal">
-    <span class="sec-num">// 03</span>
-    <span class="sec-title">Detection Engine — EventBridge Rules</span>
-    <div class="sec-line"></div>
-  </div>
-
-  <div class="events-grid">
-    <div class="event-card reveal">
-      <div class="ev-category">IAM CHANGES</div>
-      <div class="ev-title">Privilege Escalation Detection</div>
-      <div class="ev-apis">
-        <div class="ev-api">AttachRolePolicy</div>
-        <div class="ev-api">PutRolePolicy</div>
-        <div class="ev-api">CreateAccessKey</div>
-      </div>
-    </div>
-    <div class="event-card reveal">
-      <div class="ev-category">S3 EXPOSURE</div>
-      <div class="ev-title">Public Bucket Detection</div>
-      <div class="ev-apis">
-        <div class="ev-api">PutBucketPolicy</div>
-        <div class="ev-api">PutBucketAcl</div>
-        <div class="ev-api">DeletePublicAccessBlock</div>
-      </div>
-    </div>
-    <div class="event-card reveal">
-      <div class="ev-category">NETWORK EXPOSURE</div>
-      <div class="ev-title">Security Group Ingress Monitor</div>
-      <div class="ev-apis">
-        <div class="ev-api">AuthorizeSecurityGroupIngress</div>
-        <div class="ev-api">0.0.0.0/0 port 22 (SSH)</div>
-        <div class="ev-api">0.0.0.0/0 port 3306 (DB)</div>
-      </div>
-    </div>
-    <div class="event-card reveal">
-      <div class="ev-category">AUDIT TRAIL</div>
-      <div class="ev-title">CloudTrail Integrity Guard</div>
-      <div class="ev-apis">
-        <div class="ev-api">StopLogging</div>
-        <div class="ev-api">DeleteTrail</div>
-        <div class="ev-api">UpdateTrail</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── SECTION 4: REMEDIATION ── -->
-<div class="divider"></div>
-<div class="section" id="remediation">
-  <div class="sec-hdr reveal">
-    <span class="sec-num">// 04</span>
-    <span class="sec-title">Automated Remediation — Lambda Functions</span>
-    <div class="sec-line"></div>
-  </div>
-
-  <div class="remediation-grid">
-    <!-- S3 -->
-    <div class="rem-card reveal">
-      <div class="rem-header">
-        <div class="rem-icon">🪣</div>
-        <div class="rem-title">S3 Public Bucket Remediation</div>
-      </div>
-      <div class="rem-body">
-        <div class="rem-step"><div class="step-num">1</div><div class="step-text">Extract bucket name from CloudTrail event</div></div>
-        <div class="rem-step"><div class="step-num">2</div><div class="step-text">Check tag: <code style="color:var(--yellow)">intended-public=true</code></div></div>
-        <div class="rem-step"><div class="step-num">3</div><div class="step-text">If not tagged, enable Block Public Access</div></div>
-        <div class="rem-code">
-          BlockPublicAcls = true<br>
-          IgnorePublicAcls = true<br>
-          BlockPublicPolicy = true<br>
-          RestrictPublicBuckets = true
-        </div>
-      </div>
-    </div>
-
-    <!-- SG -->
-    <div class="rem-card reveal">
-      <div class="rem-header">
-        <div class="rem-icon">🔒</div>
-        <div class="rem-title">Security Group Exposure Remediation</div>
-      </div>
-      <div class="rem-body">
-        <div class="rem-step"><div class="step-num">1</div><div class="step-text">Identify the Security Group ID from event</div></div>
-        <div class="rem-step"><div class="step-num">2</div><div class="step-text">Extract the risky ingress rule (0.0.0.0/0)</div></div>
-        <div class="rem-step"><div class="step-num">3</div><div class="step-text">Revoke only the unsafe rule — safe rules untouched</div></div>
-        <div class="rem-code">
-          ec2.revoke_security_group_ingress(<br>
-          &nbsp;&nbsp;GroupId = sg-id,<br>
-          &nbsp;&nbsp;IpPermissions = [risky_rule]<br>
-          )
-        </div>
-      </div>
-    </div>
-
-    <!-- IAM -->
-    <div class="rem-card reveal">
-      <div class="rem-header">
-        <div class="rem-icon">🔑</div>
-        <div class="rem-title">IAM Privilege Monitoring</div>
-      </div>
-      <div class="rem-body">
-        <div class="rem-step"><div class="step-num">1</div><div class="step-text">Detect unexpected high-privilege policy attachment</div></div>
-        <div class="rem-step"><div class="step-num">2</div><div class="step-text">Log the full event to centralized S3 immutably</div></div>
-        <div class="rem-step"><div class="step-num">3</div><div class="step-text">Trigger SNS alert to security team for investigation</div></div>
-        <div class="rem-code">
-          MONITORED: AdministratorAccess<br>
-          MONITORED: PowerUserAccess<br>
-          ACTION: log + alert + investigate
-        </div>
-      </div>
-    </div>
-
-    <!-- Tag-based -->
-    <div class="rem-card reveal">
-      <div class="rem-header">
-        <div class="rem-icon">🏷️</div>
-        <div class="rem-title">Tag-Based Security Governance</div>
-      </div>
-      <div class="rem-body">
-        <div class="rem-step"><div class="step-num">1</div><div class="step-text">Lambda checks resource tags before any action</div></div>
-        <div class="rem-step"><div class="step-num">2</div><div class="step-text">Approved resources skip remediation safely</div></div>
-        <div class="rem-step"><div class="step-num">3</div><div class="step-text">Prevents breaking legitimate configurations</div></div>
-        <div class="rem-code">
-          Tag: intended-public = true → SKIP<br>
-          Tag: env = prod-approved → SKIP<br>
-          No tag match → REMEDIATE
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── SECTION 5: LIVE DASHBOARD ── -->
-<div class="divider"></div>
-<div class="section">
-  <div class="sec-hdr reveal">
-    <span class="sec-num">// 05</span>
-    <span class="sec-title">Security Operations Center</span>
-    <div class="sec-line"></div>
-  </div>
-
-  <div class="dashboard reveal">
-    <div class="dash-topbar">
-      <div class="dash-title">SOC :: REAL-TIME MONITORING</div>
-      <div class="live-dot">● LIVE</div>
-    </div>
-    <div class="dash-stats">
-      <div class="dash-stat">
-        <div class="ds-val red" id="d1">0</div>
-        <div class="ds-label">THREATS DETECTED</div>
-      </div>
-      <div class="dash-stat">
-        <div class="ds-val yellow" id="d2">0</div>
-        <div class="ds-label">EVENTS PROCESSED</div>
-      </div>
-      <div class="dash-stat">
-        <div class="ds-val green" id="d3">0</div>
-        <div class="ds-label">AUTO-REMEDIATED</div>
-      </div>
-      <div class="dash-stat">
-        <div class="ds-val cyan">99.9%</div>
-        <div class="ds-label">SECURITY SCORE</div>
-      </div>
-    </div>
-    <div class="event-log-box" id="logbox"></div>
-  </div>
-</div>
-
-<!-- ── SECTION 6: IaC ── -->
-<div class="divider"></div>
-<div class="section" id="iac">
-  <div class="sec-hdr reveal">
-    <span class="sec-num">// 06</span>
-    <span class="sec-title">Infrastructure as Code — Terraform</span>
-    <div class="sec-line"></div>
-  </div>
-
-  <div class="iac-grid">
-    <div class="iac-card reveal">
-      <div class="iac-icon">📁</div>
-      <div class="iac-title">Terraform State Management</div>
-      <div class="iac-desc">Remote state stored securely with encryption and concurrent-write protection.</div>
-      <div class="iac-items">
-        <div class="iac-item">S3 bucket — versioning + encryption</div>
-        <div class="iac-item">DynamoDB — state lock table</div>
-        <div class="iac-item">KMS — state file encryption</div>
-      </div>
-    </div>
-    <div class="iac-card reveal">
-      <div class="iac-icon">🔐</div>
-      <div class="iac-title">Cross-Account Deployment</div>
-      <div class="iac-desc">No direct production access. All changes go through controlled role assumption.</div>
-      <div class="iac-items">
-        <div class="iac-item">STS AssumeRole — deployment account</div>
-        <div class="iac-item">Pipeline Role — least privilege</div>
-        <div class="iac-item">KMS cross-account key sharing</div>
-      </div>
-    </div>
-    <div class="iac-card reveal">
-      <div class="iac-icon">⚙️</div>
-      <div class="iac-title">Managed Resources via Terraform</div>
-      <div class="iac-desc">All security automation infrastructure defined as reproducible code.</div>
-      <div class="iac-items">
-        <div class="iac-item">Lambda functions + IAM roles</div>
-        <div class="iac-item">EventBridge rules + patterns</div>
-        <div class="iac-item">CloudTrail + S3 logging buckets</div>
-      </div>
-    </div>
-    <div class="iac-card reveal">
-      <div class="iac-icon">🔄</div>
-      <div class="iac-title">CI/CD Pipeline</div>
-      <div class="iac-desc">Automated, auditable deployment pipeline with security checks at every stage.</div>
-      <div class="iac-items">
-        <div class="iac-item">GitHub → CI/CD trigger</div>
-        <div class="iac-item">Terraform plan → review</div>
-        <div class="iac-item">Terraform apply → deploy</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── SECTION 7: TECH STACK ── -->
-<div class="divider"></div>
-<div class="section" id="stack">
-  <div class="sec-hdr reveal">
-    <span class="sec-num">// 07</span>
-    <span class="sec-title">Full Technology Stack</span>
-    <div class="sec-line"></div>
-  </div>
-
-  <div class="stack-grid">
-    <div class="stack-card reveal"><div class="stack-icon">📋</div><div class="stack-name">CloudTrail</div><div class="stack-role">API audit logging across all accounts</div></div>
-    <div class="stack-card reveal"><div class="stack-icon">⚡</div><div class="stack-name">EventBridge</div><div class="stack-role">Event detection & routing engine</div></div>
-    <div class="stack-card reveal"><div class="stack-icon">λ</div><div class="stack-name">Lambda</div><div class="stack-role">Serverless remediation functions (Python)</div></div>
-    <div class="stack-card reveal"><div class="stack-icon">🪣</div><div class="stack-name">S3</div><div class="stack-role">Immutable log storage + Object Lock</div></div>
-    <div class="stack-card reveal"><div class="stack-icon">🔑</div><div class="stack-name">IAM + STS</div><div class="stack-role">Least privilege + cross-account roles</div></div>
-    <div class="stack-card reveal"><div class="stack-icon">🔐</div><div class="stack-name">AWS KMS</div><div class="stack-role">Encryption for logs, state, data</div></div>
-    <div class="stack-card reveal"><div class="stack-icon">🗄️</div><div class="stack-name">DynamoDB</div><div class="stack-role">Terraform state lock table</div></div>
-    <div class="stack-card reveal"><div class="stack-icon">📣</div><div class="stack-name">SNS</div><div class="stack-role">Security alert notifications</div></div>
-    <div class="stack-card reveal"><div class="stack-icon">🏗️</div><div class="stack-name">Terraform</div><div class="stack-role">Full IaC provisioning</div></div>
-    <div class="stack-card reveal"><div class="stack-icon">🐍</div><div class="stack-name">Python</div><div class="stack-role">Lambda automation scripts</div></div>
-    <div class="stack-card reveal"><div class="stack-icon">🔄</div><div class="stack-name">CI/CD</div><div class="stack-role">Automated secure deployment pipeline</div></div>
-    <div class="stack-card reveal"><div class="stack-icon">🏢</div><div class="stack-name">AWS Orgs</div><div class="stack-role">Multi-account management</div></div>
-  </div>
-</div>
-
-<!-- ── SECTION 8: PRINCIPLES ── -->
-<div class="divider"></div>
-<div class="section">
-  <div class="sec-hdr reveal">
-    <span class="sec-num">// 08</span>
-    <span class="sec-title">Security Principles Implemented</span>
-    <div class="sec-line"></div>
-  </div>
-
-  <div class="principles-grid">
-    <div class="principle reveal">
-      <div class="pr-icon">🔒</div>
-      <div class="pr-title">Least Privilege Access</div>
-      <div class="pr-desc">Each Lambda function only has the exact permissions needed for its remediation action — nothing more.</div>
-    </div>
-    <div class="principle reveal">
-      <div class="pr-icon">🗂️</div>
-      <div class="pr-title">Immutable Logging</div>
-      <div class="pr-desc">S3 Object Lock + Versioning ensures audit logs can never be deleted or modified — even by attackers.</div>
-    </div>
-    <div class="principle reveal">
-      <div class="pr-icon">⚡</div>
-      <div class="pr-title">Event-Driven Security</div>
-      <div class="pr-desc">Security responses triggered by infrastructure events in real-time — no manual monitoring required.</div>
-    </div>
-    <div class="principle reveal">
-      <div class="pr-icon">🏢</div>
-      <div class="pr-title">Multi-Account Isolation</div>
-      <div class="pr-desc">Production, Logging, and Deployment are separated accounts — limiting the blast radius of any compromise.</div>
-    </div>
-    <div class="principle reveal">
-      <div class="pr-icon">🏷️</div>
-      <div class="pr-title">Tag-Based Governance</div>
-      <div class="pr-desc">Approved resources use tags to opt-out of automation — preventing false positives on legitimate configs.</div>
-    </div>
-    <div class="principle reveal">
-      <div class="pr-icon">🏗️</div>
-      <div class="pr-title">Infrastructure as Code</div>
-      <div class="pr-desc">All resources deployed via Terraform — reproducible, auditable, version-controlled infrastructure.</div>
-    </div>
-  </div>
-</div>
-
-<!-- ── SECTION 9: ROADMAP ── -->
-<div class="divider"></div>
-<div class="section">
-  <div class="sec-hdr reveal">
-    <span class="sec-num">// 09</span>
-    <span class="sec-title">Future Roadmap</span>
-    <div class="sec-line"></div>
-  </div>
-
-  <div class="roadmap-list">
-    <div class="roadmap-item reveal"><div class="ri-icon">💬</div><div class="ri-text">Slack security alerts integration for real-time team notifications</div></div>
-    <div class="roadmap-item reveal"><div class="ri-icon">🕵️</div><div class="ri-text">Amazon GuardDuty integration for ML-based threat intelligence</div></div>
-    <div class="roadmap-item reveal"><div class="ri-icon">☸️</div><div class="ri-text">Kubernetes security monitoring via Amazon EKS + Falco</div></div>
-    <div class="roadmap-item reveal"><div class="ri-icon">🤖</div><div class="ri-text">AI-based anomaly detection using Amazon Bedrock</div></div>
-    <div class="roadmap-item reveal"><div class="ri-icon">📊</div><div class="ri-text">SIEM integration — centralized security analytics dashboard</div></div>
-    <div class="roadmap-item reveal"><div class="ri-icon">🛡️</div><div class="ri-text">AWS Security Hub aggregation for unified compliance view</div></div>
-  </div>
-</div>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-logo">CLOUDGUARD</div>
-  <div class="footer-info">
-    PROJECT: EVENT-DRIVEN CLOUD SECURITY AUTOMATION PLATFORM ON AWS<br>
-    ARCHITECTURE: DETECTION → REMEDIATION → SECURE DEPLOYMENT<br>
-    BUILT: PRODUCTION SIMULATED LAB · MULTI-ACCOUNT AWS
-  </div>
-</footer>
-
-<script>
-/* ── Scroll reveal ── */
-const revealEls = document.querySelectorAll('.reveal');
-const io = new IntersectionObserver(entries => {
-  entries.forEach((e, i) => {
-    if (e.isIntersecting) setTimeout(() => e.target.classList.add('in'), i * 60);
-  });
-}, { threshold: 0.08 });
-revealEls.forEach(el => io.observe(el));
-
-/* ── Counter animation ── */
-function countUp(el, target, dur = 1600) {
-  let v = 0;
-  const step = target / (dur / 16);
-  const t = setInterval(() => {
-    v = Math.min(v + step, target);
-    el.textContent = Math.floor(v);
-    if (v >= target) clearInterval(t);
-  }, 16);
-}
-countUp(document.getElementById('c1'), 12);
-countUp(document.getElementById('c2'), 3);
-countUp(document.getElementById('c3'), 47);
-
-/* ── Live SOC dashboard ── */
-let d1=0, d2=0, d3=0;
-const el1 = document.getElementById('d1');
-const el2 = document.getElementById('d2');
-const el3 = document.getElementById('d3');
-
-const logEntries = [
-  { cls:'crit', time:'14:32:01', msg:'PutBucketAcl — my-data-bucket exposed publicly',        tag:'CRITICAL' },
-  { cls:'ok',   time:'14:32:03', msg:'Lambda: BlockPublicAccess enabled on my-data-bucket',    tag:'RESOLVED' },
-  { cls:'crit', time:'14:34:17', msg:'AuthorizeSecurityGroupIngress 0.0.0.0/0:22 (SSH open)',  tag:'CRITICAL' },
-  { cls:'ok',   time:'14:34:19', msg:'Lambda: RevokeSecurityGroupIngress executed',            tag:'RESOLVED' },
-  { cls:'warn', time:'14:38:44', msg:'AttachRolePolicy: AdministratorAccess attached to role', tag:'WARNING'  },
-  { cls:'info', time:'14:38:46', msg:'SNS: security-team alerted — IAM investigation needed', tag:'ALERTED'  },
-  { cls:'warn', time:'14:41:09', msg:'DeletePublicAccessBlock API call detected on S3',        tag:'WARNING'  },
-  { cls:'ok',   time:'14:41:11', msg:'Lambda: BlockPublicAccess re-enforced automatically',   tag:'RESOLVED' },
-  { cls:'info', time:'14:45:00', msg:'CloudTrail: StopLogging attempt detected — blocked',    tag:'MONITOR'  },
-  { cls:'ok',   time:'14:45:03', msg:'Immutable log stored to centralized S3 — Object Lock',  tag:'LOGGED'   },
-];
-
-const logBox = document.getElementById('logbox');
-let logIdx = 0;
-
-function addLog() {
-  if (logIdx >= logEntries.length) return;
-  const e = logEntries[logIdx++];
-  const row = document.createElement('div');
-  row.className = `log-row ${e.cls}`;
-  row.innerHTML = `<span class="log-time">${e.time}</span><span class="log-msg">${e.msg}</span><span class="log-tag">${e.tag}</span>`;
-  logBox.prepend(row);
-
-  if (e.cls === 'crit' || e.cls === 'warn') { d1++; d2++; el1.textContent=d1; el2.textContent=d2; }
-  if (e.cls === 'ok') { d3++; d2++; el3.textContent=d3; el2.textContent=d2; }
-  if (e.cls === 'info') { d2++; el2.textContent=d2; }
-
-  if (logIdx < logEntries.length) setTimeout(addLog, 1600 + Math.random()*1000);
-}
-setTimeout(addLog, 1400);
-</script>
-</body>
-</html>
+  font-family:'Orbitron',monospace;
+  font-size:clamp(1.45rem,5.5vw,3.6rem);
+  font-weight:900; line-height:1.12;
+  letter-spacing:1px; text-transform:uppercase;
+  color:#fff; animation:fadeUp 0.8s 0.1s ease both;
+  max-width:780px;
+}
+.hero h1 em { font-style:normal; color:var(--accent); text-shadow:var(--glow); }
+
+.hero-sub {
+  margin-top:16px;
+  font-size:clamp(0.9rem,2.8vw,1.05rem);
+  color:var(--dim); max-width:600px; line-height:1.65;
+  animation:fadeUp 0.8s 0.2s ease both; padding:0 8px;
+}
+
+.pipeline-label {
+  margin-top:32px;
+  display:flex; flex-wrap:wrap; align-items:center;
+  justify-content:center; gap:6px;
+  animation:fadeUp 0.8s 0.3s ease both;
+}
+.pipe-step {
+  padding:8px 18px; border:1px solid;
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(0.62rem,2.2vw,0.78rem);
+  letter-spacing:2px; background:var(--panel);
+}
+.pipe-step.detect   { color:var(--warn);    border-color:var(--warn); }
+.pipe-step.remediate{ color:var(--accent2); border-color:var(--accent2); }
+.pipe-step.deploy   { color:var(--accent3); border-color:var(--accent3); }
+.pipe-arrow { color
